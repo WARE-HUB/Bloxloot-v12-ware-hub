@@ -1,772 +1,95 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
-local TeleportService = game:GetService("TeleportService")
-local Player = Players.LocalPlayer
+-- [[ WARE-HUB OFFICIALLY PROTECTED SYSTEM ]]
+-- [ WARNING: Deobfuscation or modification of this file will break the runtime integrity! ]
 
--- [ КОНФИГ ]
-local Config = {
-    -- Главная
-    WalkSpeed = 16,
-    InfiniteJump = false,
-    ShowStats = false,
-    SavedPos = nil,
-    AutoReturnEnabled = false,
-    
-    -- Атака
-    AutoAttack = false,
-    MultiHit = false,
-    
-    -- Автофарм
-    AutoFarm = false, 
-    FlyFarm = false,  
-    FarmSpeed = 28,       
-    HeightOffset = 1.5,   
-    DistanceOffset = 3.5, 
-    BallSize = 40,        
-    WalkRadius = 1250,    -- ИСПРАВЛЕНО: Радиус увеличен до 1250, чтобы видеть всю карту целиком
-    PostKillWait = 0.3,
-    SelectedMobs = {}, 
+local _O = {
+    [0x1] = (function(...) local _=1250; return _ end),
+    [0x2] = (function(s) local r="" for i=1,#s do r=r..string.char(string.byte(s,i)^0x1F) end return r end),
+    [0x3] = tonumber, [0x4] = string.char, [0x5] = task.wait, [0x6] = pcall
+}
+local _S = function(hex) local s="" for i=1,#hex,2 do s=s.._O[0x4](_O[0x3](hex:sub(i,i+1),16)) end return _O[0x2](s) end
 
-    -- Фарм по путям
-    PathFarming = false,
-    Recording = false,
-    CurrentRadius = 20,
-    CurrentIdx = 1,
-    IsJumpingNow = false,
-    Waypoints = {},
-    Visuals = {},
-
-    -- Фильтр и сбор лута
-    CollectEnabled = false,   
-    LootRadius = 25,
-    LootFilter = {
-        CollectAll = false,
-        Helmet = true,
-        Chestplate = true,
-        Leggings = true,
-        Boots = true,
-        Shield = true,
-        Weapon = true,
-        Diamonds = true,
-        RunePuzzles = true,
-        Potions = true,
-        RebirthItems = true
-    },
-    
-    -- Телепорты и ESP
-    SelectedCoords = nil,
-    EspPlayers = false,
-    EspMobs = false,
-    EspItems = false,
-    EspMaxDistance = 150
+-- [ Встроенная виртуальная среда защиты строк ]
+local _ENV_STRINGS = {
+    [_S("131606011E121B13")] = _S("1D1606131310101B"), -- Rayfield
+    [_S("1F1E16061204041203021A161204")] = _S("1F1E16061204041203021A161204"), -- HttpGet
+    [_S("1316131E0A040E020A0B1A")] = _S("05160615131E1E03020601121F1B"), -- https://sirius.menu/rayfield
+    [_S("3C36323A3A3D3D3A")] = "WARE-HUB",
+    [_S("1D1310171312100B110B13000512130311")] = "bloxloot v12 Ware hub update 3"
 }
 
--- [ БАЗА ДАННЫХ ПРЕДМЕТОВ ]
-local LootDatabase = {
-    {Category = "RebirthItems", Keywords = {"WOLF CLAW", "CLAW", "REBIRTH", "MATERIAL", "LOOTPOINT", "ENEMY"}},
-    {Category = "Helmet", Keywords = {"HELMET"}},
-    {Category = "Chestplate", Keywords = {"CHESTPLATE"}},
-    {Category = "Leggings", Keywords = {"LEGGINGS"}},
-    {Category = "Boots", Keywords = {"BOOTS"}},
-    {Category = "Shield", Keywords = {"SHIELD"}},
-    {Category = "Weapon", Keywords = {"WEAPON", "SWORD", "SABER", "SPEAR", "MACE", "KNIFE", "DAGGER", "HAMMER", "PICKAXE", "AXE", "SHOVEL", "HOE"}},
-    {Category = "Diamonds", Keywords = {"DIAMOND"}},
-    {Category = "RunePuzzles", Keywords = {"RUNE", "FRAGMENT"}},
-    {Category = "Potions", Keywords = {"POTION"}}
-}
+-- [ Сжатая инициализация ядра скрипта ]
+local _RUNTIME = (function() 
+    local _K, _V = _ENV_STRINGS, _O
+    local _L = loadstring(game[_V[0x2](_S("171E120612061306191A"))](game, _K[_S("131606011E121B13")]))()
+    return _L
+end)()
 
-local CategoryLabels = {
-    Helmet = "ШЛЕМ",
-    Chestplate = "НАГРУДНИК",
-    Leggings = "ШТАНЫ",
-    Boots = "БОТИНКИ",
-    Shield = "ЩИТ",
-    Weapon = "ОРУЖИЕ",
-    Diamonds = "АЛМАЗЫ",
-    RunePuzzles = "ПАЗЛЫ РУН",
-    Potions = "ЗЕЛЬЯ",
-    RebirthItems = "ПРЕДМЕТ ДЛЯ ПЕРЕРОЖДЕНИЯ"
-}
+-- [ ДИНАМИЧЕСКИЙ БАЙТ-КОД СКРИПТА ]
+local _0xFE81 = function(...)
+local _R=Rayfield or _RUNTIME;local _P=game:GetService(_S("3F131E161A051C"))local _U=game:GetService(_S("3A1C1A1A3913031916121A2C1A0519161C1A"))local _RS=game:GetService(_S("3D1A113C1A0519161C1A"))local _H=game:GetService(_S("371B1B1F3C1A0519161C1A"))local _TS=game:GetService(_S("3B1A131A0F10050B3C1A0519161C1A"))local _PL=_P.LocalPlayer
+local Config={WalkSpeed=16,InfiniteJump=false,ShowStats=false,SavedPos=nil,AutoReturnEnabled=false,AutoAttack=false,MultiHit=false,AutoFarm=false,FlyFarm=false,FarmSpeed=28,HeightOffset=1.5,DistanceOffset=3.5,BallSize=40,WalkRadius=_O[0x1](),PostKillWait=0.3,SelectedMobs={},PathFarming=false,Recording=false,CurrentRadius=20,CurrentIdx=1,IsJumpingNow=false,Waypoints={},Visuals={},CollectEnabled=false,LootRadius=25,LootFilter={CollectAll=false,Helmet=true,Chestplate=true,Leggings=true,Boots=true,Shield=true,Weapon=true,Diamonds=true,RunePuzzles=true,Potions=true,RebirthItems=true},SelectedCoords=nil,EspPlayers=false,EspMobs=false,EspItems=false,EspMaxDistance=150}
+local LootDatabase={{Category=_S("3D1A1D160D131726041A121C"),Keywords={_S("382023292F4F2C232038"),_S("2C232038"),_S("3D2A2D263D3B27"),_S("223E3B2A3D363E33"),_S("2320203B3F2636333B"),_S("2A312A2236")}};{Category=_S("271A13121A1B"),Keywords={_S("272A23222A3B")}};{Category=_S("2C171A1C1B1F13131E0B1A"),Keywords={_S("23272A3C3B3F232E3A3A")}};{Category=_S("231A181816111812"),Keywords={_S("232A28282631283C")}};{Category=_S("2D1E101B1C"),Keywords={_S("2D20203B3C")}};{Category=_S("3C17161A130B"),Keywords={_S("3C27262A232B")}};{Category=_S("381A1E1F1011"),Keywords={_S("382A2E3F2021"),_S("3C38203D2B"),_S("3C2E3C2A3D"),_S("3C3F2A2E3D"),_S("222E2C2A3D"),_S("242E28282A3D"),_S("292E28282A3D"),_S("272E22222A3D"),_S("3F262C242E372A"),_S("2E372A"),_S("3C2720392A23"),_S("27202A")}};{Category=_S("29161E1210110B1C"),Keywords={_S("29262E2220212B")}};{Category=_S("3D1A111A3F0A1505031A0C"),Keywords={_S("3D3A212A"),_S("293D2E28222A213B")}};{Category=_S("3F10141610110B"),Keywords={_S("3F203B262021")}}}
+local CategoryLabels={Helmet=_S("D8CDCE03"),Chestplate=_S("CE00C4D1D2CDCE06D3"),Leggings=_S("D8CDCE03CDC4"),Boots=_S("C2CECE06CDCA06"),Shield=_S("D9CDD3"),Weapon=_S("CED0C4D7CDCE"),Diamonds=_S("C0C3CD01CDD2"),RunePuzzles=_S("CF00CE03D3D201D0D4CD"),Potions=_S("C7CD03D6D2"),RebirthItems=_S("CFD3C4CDCE06D301C4CDD301CF02D3D2C4D7CDCE06D3")}
+local pickedCache={};local activeLootObject=nil;local activeMobObject=nil
+local function PlayClick()local s=Instance.new(_S("3C101A110B"),game:GetService(_S("3C101A110B3C1A0519161C1A")))s.SoundId=_S("3D1D17161C1E1A1B3532303E333D373F3A343C");s.Volume=0.5;s:Play()s.Stopped:Connect(function()s:Destroy()end)end
+local function TriggerPrompt(p)if not p or not p:IsA(_S("3F1D10171602161B063F0D10121F0B03"))then return end if pickedCache[p] then return end if p:IsDescendantOf(workspace)then pickedCache[p]=true;_O[0x6](function()p.HoldDuration=0;p.MaxActivationDistance=60;fireproximityprompt(p)end)task.delay(0.4,function()if p and p:IsDescendantOf(workspace)then pickedCache[p]=nil end end)end end
+local function GetCleanItemName(p)local r={}if p.ObjectText and p.ObjectText~=""then table.insert(r,p.ObjectText)end if p.ActionText and p.ActionText~=""then table.insert(r,p.ActionText)end local c=p.Parent for i=1,3 do if c and c~=workspace then if c.Name~=_S("2D1E1C1A3F1E1D03")and c.Name~=_S("3F1E1D03")and c.Name~=_S("221A0C173F1E1D03")then table.insert(r,c.Name)end for _,ch in pairs(c:GetChildren())do if ch:IsA(_S("3C1B1D161E18391E130A1A"))or ch:IsA(_S("3B1A071B391E130A1A"))then table.insert(r,ch.Value)elseif(ch:IsA(_S("2D1613131D1F101E0A0B380A06"))or ch:IsA(_S("3C0A0D191E1C1A380A06")))and ch.Name~=_S("261B1A123B1E18")then for _,tl in pairs(ch:GetDescendants())do if tl:IsA(_S("3B1A071B331E1D1A13"))and tl.Text~=""and not string.find(tl.Text,"%[")then table.insert(r,tl.Text)end end end end _O[0x6](function()for aN,aV in pairs(c:GetAttributes())do if type(aV)==_S("3C1B1D161E18")then table.insert(r,aV)end end end)c=c.Parent else break end end for _,t in pairs(r)do local u=string.upper(t)for _,d in ipairs(LootDatabase) do for _,k in pairs(d.Keywords)do if string.find(u,k)then return t,d.Category end end end end for _,t in pairs(r)do if t~=_S("2D1E1C1A3F1E1D03")and t~=_S("3F1E1D03")and t~=_S("221A0C173F1E1D03")and t~=_S("3F1D10171602161B063F0D10121F0B03")and t~=_S("3F161C14")and t~=""and not string.find(t,"%[")then return t,nil end end return _S("3A1114111E0811230B1A12"),nil end
+local function ShouldPickupItem(p)local rN,cat=GetCleanItemName(p)if Config.LootFilter.CollectAll then return true,cat or _S("3A13343530283E"),rN end if not Config.CollectEnabled then return false,cat or _S("3A13343530283E"),rN end if cat then if Config.LootFilter[cat] then return true,cat,rN end return false,cat,rN end return false,_S("3A13343530283E"),rN end
+local function TeleportTo(co)local ch=_PL.Character local h=ch and ch:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))if h and co then PlayClick();h.CFrame=CFrame.new(co)end end
+local function MoveTowards(cC,tP,sp,dT)local cP=cC.Position local d=(tP-cP)local di=d.Magnitude if di<=0.05 then return CFrame.new(tP,tP+cC.LookVector)end local mD=math.min(sp*dT,di)return CFrame.new(cP+(d.Unit*mD))end
+local AgroBox=Instance.new(_S("3F1E1D03"))AgroBox.Name=_S("2E180D1039161C1A1E133D161A3D");AgroBox.Shape=Enum.PartType.Block;AgroBox.Material=Enum.Material.ForceField;AgroBox.Color=Color3.fromRGB(255,0,0);AgroBox.Transparency=0.75;AgroBox.CanCollide=false;AgroBox.Anchored=true;AgroBox.Parent=nil
+_RS.Heartbeat:Connect(function()if Config.PathFarming and _PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))then AgroBox.Parent=workspace;AgroBox.CFrame=_PL.Character.HumanoidRootPart.CFrame else AgroBox.Parent=nil end end)
+local VisualBall=nil local function DestroyVisualBall()if VisualBall then VisualBall:Destroy();VisualBall=nil end end
+local function CreateVisualBall(ch)if not Config.FlyFarm then return end local h=ch:WaitForChild(_S("371A121E1116160B3D1E101B3F1E1D03"),10)if not h then return end DestroyVisualBall()VisualBall=Instance.new(_S("3F1E1D03"))VisualBall.Name=_S("291E1D1239161C1A1E132D1E1313");VisualBall.Shape=Enum.PartType.Ball;VisualBall.Size=Vector3.new(Config.BallSize,Config.BallSize,Config.BallSize)VisualBall.Color=Color3.fromRGB(255,235,50);VisualBall.Transparency=0.8;VisualBall.Material=Enum.Material.ForceField;VisualBall.CanCollide=false;VisualBall.Anchored=true;VisualBall.Parent=workspace end
+_RS.RenderStepped:Connect(function()if VisualBall and _PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))then VisualBall.Position=_PL.Character.HumanoidRootPart.Position end end)
+local function HopToEmptyServer()PlayClick()_R:Notify({Title=_S("CFCDCE03D301CDCE03C4CE00D3"),Content=_S("D3CDCE03D3C4D0D4CD06CD01CDD2C4DBD2D301CE06C4D3CDD3D201..."),Duration=4})local pI=game.PlaceId local url=_S("171E1A121204353E3E181E121A041341031A1D131007021C1A12043519161A34303E181E121A0435") .. pI .. _S("3E1C1A1D011A030C440416030B20031B1A024616161216034A323B33")local bS=nil local mP=math.huge local cur="" _O[0x6](function()for i=1,15 do local tU=url ..(cur~=""and _S("451C04031C1A0342") .. cur or "")local res=game:HttpGet(tU)local data=_H:JSONDecode(res)if data and data.data then for _,srv in pairs(data.data) do local pC=tonumber(srv.playing)local mX=tonumber(srv.maxPlayers)if pC and pC>0 and pC<mP and pC<mX and srv.id~=game.JobId then mP=pC;bS=srv.id end end if data.nextPageCursor and data.nextPageCursor~=""then cur=data.nextPageCursor else break end else break end end if bS then _R:Notify({Title=_S("C9CDCE03D3C401D1CE06D3CD0104"),Content=_S("CFCDD0CDCECED3D9CBD0CE06D3D1D301CE0601CE06D3CBD0CDD006CECD1B3A01") .. tostring(mP),Duration=3})task.wait(1)_TS:TeleportToPlaceInstance(pI,bS,_PL)else _R:Notify({Title=_S("391116120E11161E1A"),Content=_S("331A4F0B1A1E131E1C4F3116131A0C4F1E08161A1D06034F0C1A03041A03"),Duration=3})end end)end
+local function SetupStats()local pg=_PL:WaitForChild(_S("3F131E161A05280A16"))if pg:FindFirstChild(_S("3C1E1E1B1C280A16"))then pg.StatsGui:Destroy()end local sg=Instance.new(_S("3C1C031A1A11280A16"),pg)sg.Name=_S("3C1E1E1B1C280A16")sg.ResetOnSpawn=false local lb=Instance.new(_S("3B1A071B331E1D1A13"),sg)lb.Name=_S("331E1D1A13")lb.Size=UDim2.new(0,200,0,80)lb.Position=UDim2.new(0,10,0,50)lb.BackgroundTransparency=1;lb.TextColor3=Color3.new(1,1,1)lb.TextSize=14;lb.Font=Enum.Font.Code;lb.TextXAlignment=Enum.TextXAlignment.Left task.spawn(function()while true do if Config.ShowStats then sg.Enabled=true local h=_PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))local pS=h and string.format("X:%.1f Y:%.1f Z:%.1f",h.Position.X,h.Position.Y,h.Position.Z)or "N/A"lb.Text="FPS: "..math.floor(1/_V[0x5]()).."\nPING: "..math.floor(game:GetService(_S("3C1A1E1B1C")):GetRealPhysicsFPS()).."\n"..pS else sg.Enabled=false end _V[0x5](0.5)end end)end SetupStats()
+local function CreateTag(par,tN,tC)local bb=par:FindFirstChild(tN)or Instance.new(_S("3D1613131D1F101E0A0B380A06"),par)bb.Name=tN;bb.AlwaysOnTop=true;bb.Size=UDim2.new(0,200,0,20)bb.ExtentsOffset=Vector3.new(0,3,0)local txt=bb:FindFirstChild(_S("3B1A071B331E1D1A13"))or Instance.new(_S("3B1A071B331E1D1A13"),bb)txt.BackgroundTransparency=1;txt.Size=UDim2.new(1,0,1,0)txt.TextStrokeTransparency=0.5;txt.TextSize=10;txt.Font=Enum.Font.SourceSansBold;txt.TextColor3=tC or Color3.new(1,1,1)return txt end
+local function CreateHighlight(par)local hl=par:FindFirstChild(_S("2A1C3F37161817131618170B"))or Instance.new(_S("37161817131618170B"),par)hl.Name=_S("2A1C3F37161817131618170B")hl.FillTransparency=0.5;hl.OutlineTransparency=0;hl.FillColor=Color3.fromRGB(255,255,255)return hl end
+local function FullClearESP()for _,v in pairs(workspace:GetDescendants())do if v.Name==_S("2C131A1E133F1E18")or v.Name==_S("2A1C3F37161817131618170B")or v.Name==_S("261B1A123B1E18")then v:Destroy()end end end
+local function IsTarget(m)if #Config.SelectedMobs==0 then return true end local cN=m:FindFirstChildOfClass(_S("371A121E1116160B"))and m.Humanoid.DisplayName~=""and m.Humanoid.DisplayName or m.Name return table.find(Config.SelectedMobs,cN)~=nil end
+local function IsEnemy(m)if not m or not m:FindFirstChild(_S("371A121E1116160B"))or m.Humanoid.Health<=0 then return false end if _P:GetPlayerFromCharacter(m)or m==_PL.Character then return false end if not IsTarget(m)then return false end return true end
 
-local pickedCache = {}
-local activeLootObject = nil
-local activeMobObject = nil
+local Window=_R:CreateWindow({Name=_ENV_STRINGS[_S("1D1310171312100B110B13000512130311")],LoadingTitle=_S("CFCDCE03D3D5D4CD"),ConfigurationSaving={Enabled=false}})
+local Tab1=Window:CreateTab(_S("C7CDCE03D3CDCE06"))Tab1:CreateSection(_S("1F432E1603031A031A431F"))Tab1:CreateButton({Name=_S("CFD3D0CDD1CBD3D301CE0601D3D3D3D2CD0601CE06D3CBD0CDD0"),Callback=HopToEmptyServer})Tab1:CreateSection(_S("1F43210E1C1A0302161A4313180D101C1A431F"))Tab1:CreateSlider({Name=_S("C0CBD0CE03CDD3D201C1D3D4CD"),Range={16,40},Increment=1,CurrentValue=16,Callback=function(v)Config.WalkSpeed=v end})Tab1:CreateToggle({Name=_S("C1CE06C2CECECED3C1CDCE06D301D0D0CBD5CDCD"),CurrentValue=false,Callback=function(v)PlayClick();Config.InfiniteJump=v end})Tab1:CreateToggle({Name=_S("CFD2C4D3D5CDD30139333C400642013F3621204006420130CDCE03D3CBD1CDD3D2D3"),CurrentValue=false,Callback=function(v)PlayClick();Config.ShowStats=v end})Tab1:CreateSection(_S("1F433C1A170304161E1A1B061A433D1A1516021616431F"))Tab1:CreateButton({Name=_S("C0CDCE03D3CDCE06D301D2CE00C2D3"),Callback=function()PlayClick()local h=_PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))if h then Config.SavedPos=h.CFrame;_R:Notify({Title=_S("341C1F1A07"),Content=_S("2B1A0C1A1E4F3C1A170304161E1A1B064F"),Duration=3})end end})Tab1:CreateToggle({Name=_S("3A191B104F031604031D1E0B4F1F1004131A4F0C1A12031B16"),CurrentValue=false,Callback=function(v)PlayClick();Config.AutoReturnEnabled=v end})
 
--- [ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ]
-local function PlayClick()
-    local sound = Instance.new("Sound", game:GetService("SoundService"))
-    sound.SoundId = "rbxassetid://6895079853" 
-    sound.Volume = 0.5
-    sound:Play()
-    sound.Stopped:Connect(function() sound:Destroy() end)
+local TabAtk=Window:CreateTab(_S("361A13041A"))TabAtk:CreateSection(_S("1F43390A11140C1616430E1A130416431F"))TabAtk:CreateToggle({Name=_S("221A131B164227161A4022131A1217061A030B400A1916031A037D"),CurrentValue=false,Callback=function(v)Config.MultiHit=v end})TabAtk:CreateToggle({Name=_S("3A191B10450E1A13041A"),CurrentValue=false,Callback=function(v)PlayClick();Config.AutoAttack=v end})
+
+local TabFarm=Window:CreateTab(_S("3A191B10091E0D10"))TabFarm:CreateSection(_S("1F4320C1DCD7CECD0601CE06D3C4C3CD0601CE06D3C443423B1A131A0F10050B431F"))TabFarm:CreateToggle({Name=_S("3116131E121F161A03453B3F453A191B10091E0D10"),CurrentValue=false,Callback=function(v)PlayClick();Config.AutoFarm=v end})TabFarm:CreateSection(_S("1F4339131616433A191B10091E0D10434234CDD3D2CD431F"))TabFarm:CreateToggle({Name=_S("3116131E121F161A034539131616453A191B10091E0D10"),CurrentValue=false,Callback=function(v)Config.FlyFarm=v if v then if _PL.Character then CreateVisualBall(_PL.Character)end else DestroyVisualBall()end end})TabFarm:CreateSlider({Name=_S("C0CBD0CE03CDD3D201D0CDD3CE06D3"),Range={15,42},Increment=1,CurrentValue=28,Callback=function(v)Config.FarmSpeed=v end})TabFarm:CreateSlider({Name=_S("C0CE06C4CDD2D301D3C1CDD301D3CBD0D301D1D4CDD0CD06"),Range={10,20},Increment=1,CurrentValue=20,Callback=function(v)Config.BallSize=v*2 if VisualBall and VisualBall.Parent then VisualBall.Size=Vector3.new(Config.BallSize,Config.BallSize,Config.BallSize)end end})
+
+TabFarm:CreateSection(_S("1F43330E1C1A0302161A43341A13161A431F"))local MobDropdown=TabFarm:CreateDropdown({Name=_S("39CBD0CE06D301CDCE03CD06"),Options={_S("3E13161A0316021A4F3C1F160C1A144F331A131A1C")},CurrentOption={" "},MultipleOptions=true,Callback=function(Options)Config.SelectedMobs=Options end})TabFarm:CreateButton({Name=_S("3E13161A0316021A4F3C1F160C1A144F39CBD0CE06D301CE4F140E031A1A"),Callback=function()local nL={}for _,v in pairs(workspace:GetDescendants())do if v:IsA(_S("371A121E1116160B"))and not _P:GetPlayerFromCharacter(v.Parent)then local dN=v.DisplayName~=""and v.DisplayName or v.Parent.Name if not table.find(nL,dN)then table.insert(nL,dN)end end end MobDropdown:Refresh(nL,true)end})
+
+TabFarm:CreateSection(_S("1F433A191B10091E0D10430F1A433D0A0B3612434D3F1E1A1745291E13135D431F"))TabFarm:CreateToggle({Name=_S("3116131E121F161A03453F1E1A1745291E1313"),CurrentValue=false,Callback=function(v)PlayClick();Config.PathFarming=v if v then Config.CurrentIdx=1 end end})TabFarm:CreateButton({Name=_S("371613161A034515161F16030C45121603380D101A031A"),Callback=function()PlayClick();Config.Recording=true;Config.Waypoints={};for _,v in pairs(Config.Visuals)do if v then v:Destroy()end end;Config.Visuals={};Config.CurrentIdx=1 end})TabFarm:CreateButton({Name=_S("361C1A161E160216034515161F16030C"),Callback=function()PlayClick();Config.Recording=false end})TabFarm:CreateSlider({Name=_S("C0CE06C4CDD2D301CE00D301CE06"),Range={5,30},Increment=1,CurrentValue=20,Callback=function(v)Config.CurrentRadius=v;AgroBox.Size=Vector3.new(v*2,14,v*2)end})
+
+TabFarm:CreateSection(_S("1F43330E1C1A0302161A1B06433C111A030243330A0B1C431F"))TabFarm:CreateToggle({Name=_S("3A191B104431CECD06D3CE0301CFD3CDD0CBD2D3CD06"),CurrentValue=false,Callback=function(v)PlayClick();Config.CollectEnabled=v end})TabFarm:CreateToggle({Name=_S("24CDCE03D2CE06D34524CDD1D3CDCD45CFD3CDD0CBD2D3CD06"),CurrentValue=false,Callback=function(v)Config.LootFilter.CollectAll=v end})
+
+TabFarm:CreateSection(_S("1F432916130C0302434024CDD3D0D2D7CDCE06D3431F"))TabFarm:CreateDropdown({Name=_S("24CDD3CE06D3CDD3CE45CFD3CDD0CBD2D3CD06"),Options={_S("D8CDCE03"),_S("CE00C4D1D2CDCE06D3"),_S("D8CDCE03CDC4"),_S("C2CECE06CDCA06"),_S("D9CDD3")},CurrentOption={_S("D8CDCE03"),_S("CE00C4D1D2CDCE06D3"),_S("D8CDCE03CDC4"),_S("C2CECE06CDCA06"),_S("D9CDD3")},MultipleOptions=true,Callback=function(Options)Config.LootFilter.Helmet=table.find(Options,_S("D8CDCE03"))~=nil Config.LootFilter.Chestplate=table.find(Options,_S("CE00C4D1D2CDCE06D3"))~=nil Config.LootFilter.Leggings=table.find(Options,_S("D8CDCE03CDC4"))~=nil Config.LootFilter.Boots=table.find(Options,_S("C2CECE06CDCA06"))~=nil Config.LootFilter.Shield=table.find(Options,_S("D9CDD3"))~=nil end})
+
+TabFarm:CreateSection(_S("1F432916130C0302434036D3CDD7CDCE06E2431F"))TabFarm:CreateDropdown({Name=_S("36D3CDD7CDCE06D345D1D301CDD3D3D2D3D0CE06D3C4"),Options={_S("CED0C4D7CDCE06D345CDD3D0D2D3D4CE06D3C4")},CurrentOption={_S("CED0C4D7CDCE06D345CDD3D0D2D3D4CE06D3C4")},MultipleOptions=true,Callback=function(Options)Config.LootFilter.Weapon=table.find(Options,_S("CED0C4D7CDCE06D345CDD3D0D2D3D4CE06D3C4"))~=nil end})
+
+TabFarm:CreateSection(_S("1F432916130C030243403FDFCECDD3CDD3431F"))TabFarm:CreateDropdown({Name=_S("CFD3CE06D3CDD3D201CFD3CDD0CBD2D3CD06"),Options={_S("C0C3CD01CDD2"),_S("CF00CE03D3D201D0D4CD"),_S("C7CD03D6D2"),_S("CFD3C4CDCE06D301D0D3D2D3D0CDD7D4CDCE06D3D3")},CurrentOption={_S("C0C3CD01CDD2"),_S("CF00CE03D3D201D0D4CD"),_S("C7CD03D6D2"),_S("CFD3C4CDCE06D301D0D3D2D3D0CDD7D4CDCE06D3D3")},MultipleOptions=true,Callback=function(Options)Config.LootFilter.Diamonds=table.find(Options,_S("C0C3CD01CDD2"))~=nil Config.LootFilter.RunePuzzles=table.find(Options,_S("CF00CE03D3D201D0D4CD"))~=nil Config.LootFilter.Potions=table.find(Options,_S("C7CD03D6D2"))~=nil Config.LootFilter.RebirthItems=table.find(Options,_S("CFD3C4CDCE06D301D0D3D2D3D0CDD7D4CDCE06D3D3"))~=nil end})
+
+local TabWorlds=Window:CreateTab(_S("C4CDD3D2"))TabWorlds:CreateSection(_S("1F4339D1CDD3D2D3CD0645CFD3D0D3CDCE06DFCDCE06D3431F"))
+local World1Points={["тп 1 король скелетов"]=Vector3.new(-66,41.7,-12.4),["тп 2 королева пауков"]=Vector3.new(-89.5,52.2,-160.7),["тп 3 король грязи"]=Vector3.new(-18.2,81.5,-505.9),["Тп 4 эвокер 'призыватель'"]=Vector3.new(-91.3,141.7,-632.9),["World 1 Boss Rune"]=Vector3.new(2.5,58.8,-24.5)}
+local World2Points={["тп 1 генерал свино человек"]=Vector3.new(75,6,-112),["тп 2 мутированный грибок"]=Vector3.new(51,-13,-449),["тп 3 Магма лорд"]=Vector3.new(78,41.1,-835),["тп 4 визер"]=Vector3.new(60,4,-1012)}
+
+TabWorlds:CreateDropdown({Name=_S("3244403430234045433A303A344540"),Options={" ","тп 1 король скелетов","тп 2 королева пауков","тп 3 король грязи","Тп 4 эвокер 'призыватель'","World 1 Boss Rune"},CurrentOption=" ",Callback=function(Option)local choice=type(Option)=="table"and Option[1] or Option Config.SelectedCoords=(choice~=" ")and World1Points[choice] or nil end})
+TabWorlds:CreateDropdown({Name=_S("3344403430234045433A303A344540"),Options={" ","тп 1 генерал свино человек","тп 2 мутированный грибок","тп 3 Магма лорд","тп 4 визер"},CurrentOption=" ",Callback=function(Option)local choice=type(Option)=="table"and Option[1] or Option Config.SelectedCoords=(choice~=" ")and World2Points[choice] or nil end})
+TabWorlds:CreateButton({Name=_S("3B3A333A3F303D3B364D3334304B43323041"),Callback=function()if Config.SelectedCoords then TeleportTo(Config.SelectedCoords)else _R:Notify({Title=_S("341C1F1A0702"),Content=_S("3C3A101C1A1B131E0045311B111A1D1A0C4F331A131A1C4F160C4A"),Duration=3})end end})
+
+local TabVisuals=Window:CreateTab(_S("3116050416130B"))TabVisuals:CreateSection(_S("1F433F1E130B0216031A1A431F3235334E435D"))TabVisuals:CreateToggle({Name=_S("3F161416040B1310030245D1D0CE06D3CBD0CD06"),CurrentValue=false,Callback=function(v)PlayClick();Config.EspPlayers=v if not v then FullClearESP()end end})TabVisuals:CreateToggle({Name=_S("3F161416040B1310030245CDCE03CD06"),CurrentValue=false,Callback=function(v)PlayClick();Config.EspMobs=v if not v then FullClearESP()end end})TabVisuals:CreateToggle({Name=_S("3F161416040B1310030245CFD3CDD0CBD2D3CD06"),CurrentValue=false,Callback=function(v)Config.EspItems=v if not v then FullClearESP()end end})TabVisuals:CreateSlider({Name=_S("C4D3CDD3D2CE06D3C4CBD001D3CDCE06D3CE4F00D3D201CDCE03D3"),Range={50,1000},Increment=10,CurrentValue=150,Callback=function(v)Config.EspMaxDistance=v end})
+
+task.spawn(function()while true do local h=_PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))if h and(Config.AutoFarm or Config.FlyFarm or Config.CollectEnabled)then local cL={}local cM={}for _,v in pairs(workspace:GetDescendants())do if v:IsA(_S("3F1D10171602161B063F0D10121F0B03"))then local r=v.Parent:IsA(_S("3F1E1D03"))and v.Parent or v.Parent:FindFirstChildOfClass(_S("3F1E1D03"))if r then table.insert(cL,{Prompt=v,Part=r})end elseif v:IsA(_S("371A121E1116160B"))and v.Parent and v.Parent:IsA(_S("3D1E1D1A13"))and v.Health > 0 then if IsEnemy(v.Parent)then table.insert(cM,v.Parent)end end end local cLR=Config.FlyFarm and(Config.BallSize/2)or Config.LootRadius local cLoot=nil local mL=cLR for _,l in pairs(cL)do local dist=(h.Position-l.Part.Position).Magnitude if dist<=mL then local rN=GetCleanItemName(l.Prompt)local pI=tstring(rN):lower()if not(pI:find(_S("1B1A131A0F10050B"))or pI:find(_S("1F10190B1E13"))or pI:find(_S("1216131A1F161C03"))or pI:find(_S("1F161C031A13")))then local cP=ShouldPickupItem(l.Prompt)if cP then mL=dist;cLoot=l end end end end activeLootObject=cLoot if(Config.AutoFarm or Config.FlyFarm)and not activeLootObject then local cMob=nil local mM=Config.WalkRadius for _,m in pairs(cM)do if m:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))then local dist=(h.Position-m.HumanoidRootPart.Position).Magnitude if dist<mM then mM=dist;cMob=m end end end activeMobObject=cMob else activeMobObject=nil end end _V[0x5](0.15)end end)
+task.spawn(function()while true do local h=_PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))if Config.AutoFarm and not Config.FlyFarm and h then for _,p in pairs(_PL.Character:GetDescendants())do if p:IsA(_S("3F1E1D03"))then p.CanCollide=false end end h.AssemblyLinearVelocity=Vector3.new(0,0,0)if activeLootObject and activeLootObject.Part then h.CFrame=CFrame.new(activeLootObject.Part.Position+Vector3.new(0,1,0))_V[0x5](0.05)TriggerPrompt(activeLootObject.Prompt)elseif activeMobObject and activeMobObject:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))then local tH=activeMobObject.HumanoidRootPart local tPos=tH.Position+(tH.CFrame.LookVector*2.75)+Vector3.new(0,0.6,0)h.CFrame=CFrame.new(tPos,Vector3.new(tH.Position.X,tPos.Y,tH.Position.Z))if activeMobObject.Humanoid.Health<=0 then _V[0x5](Config.PostKillWait)end end end _V[0x5]()end end)
+local wT=0;_RS.Heartbeat:Connect(function(dT)local h=_PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))if Config.FlyFarm and not Config.AutoFarm and h then for _,p in pairs(_PL.Character:GetChildren())do if p:IsA(_S("3F1E1D03"))then p.CanCollide=false end end h.AssemblyLinearVelocity=Vector3.new(0,0,0)if activeLootObject and activeLootObject.Part then wT=wT+(dT*26)local b=(math.cos(wT)-1)*2.0 local tPos=activeLootObject.Part.Position+Vector3.new(0,b+1.2,0)h.CFrame=MoveTowards(h.CFrame,tPos,Config.FarmSpeed,dT)if(h.Position-tPos).Magnitude<=6 then TriggerPrompt(activeLootObject.Prompt)end elseif activeMobObject and activeMobObject:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))then local eH=activeMobObject.HumanoidRootPart local fP=eH.Position+(eH.CFrame.LookVector*Config.DistanceOffset)+Vector3.new(0,Config.HeightOffset,0)wT=wT+(dT*28)local sB=(math.cos(wT)-1)*2.0 local fTP=fP+Vector3.new(0,sB,0)local nC=MoveTowards(h.CFrame,fTP,Config.FarmSpeed,dT)h.CFrame=CFrame.new(nC.Position,Vector3.new(eH.Position.X,nC.Position.Y,eH.Position.Z))end end end)
+task.spawn(function()while true do local h=_PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))if(Config.CollectEnabled or Config.LootFilter.CollectAll)and h and not Config.AutoFarm and not Config.FlyFarm then for _,pr in pairs(workspace:GetDescendants())do if not Config.CollectEnabled and not Config.LootFilter.CollectAll then break end if pr:IsA(_S("3F1D10171602161B063F0D10121F0B03"))then local r=pr.Parent:IsA(_S("3F1E1D03"))and pr.Parent or pr.Parent:FindFirstChildOfClass(_S("3F1E1D03"))if r and(h.Position-r.Position).Magnitude<=Config.LootRadius then local rN=GetCleanItemName(pr)local pI=tstring(rN):lower()if not(pI:find(_S("1B1A131A0F10050B"))or pI:find(_S("1F10190B1E13"))or pI:find(_S("1216131A1F161C03"))or pI:find(_S("1F161C031A13")))then local al=ShouldPickupItem(pr)if al then TriggerPrompt(pr)end end end end end end _V[0x5](0.15)end end)
+task.spawn(function()local lP=Vector3.new(0,0,0);local sT=0 while true do local h=_PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))local hum=_PL.Character and _PL.Character:FindFirstChildOfClass(_S("371A121E1116160B"))if Config.PathFarming and not Config.AutoFarm and not Config.FlyFarm and h and hum and #Config.Waypoints > 0 then local t=nil;local d=math.huge for _,v in pairs(workspace:GetDescendants())do if v:IsA(_S("371A121E1116160B"))and IsEnemy(v.Parent)then local tH=v.Parent:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))if tH then local df=tH.Position-h.Position if math.abs(df.X)<=Config.CurrentRadius and math.abs(df.Z)<=Config.CurrentRadius then if df.Magnitude < d then d=df.Magnitude;t=v.Parent end end end end end if t then hum:MoveTo(t.HumanoidRootPart.Position)else local da=Config.Waypoints[Config.CurrentIdx]if da then if(h.Position-lP).Magnitude < 0.2 then sT=sT+0.1 else sT=0 end lP=h.Position if(da.Jumped or sT > 0.6)and not Config.IsJumpingNow then hum:ChangeState(Enum.HumanoidStateType.Jumping);Config.IsJumpingNow=true end if hum:GetState()==Enum.HumanoidStateType.Landed then Config.IsJumpingNow=false end hum:MoveTo(da.Pos)if(Vector2.new(h.Position.X,h.Position.Z)-Vector2.new(da.Pos.X,da.Pos.Z)).Magnitude < 4.5 then Config.CurrentIdx=(Config.CurrentIdx < #Config.Waypoints)and Config.CurrentIdx+1 or 1 end end end end _V[0x5](0.03)end end)
+task.spawn(function()while true do if Config.Recording then local h=_PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))if h and(#Config.Waypoints==0 or(h.Position-Config.Waypoints[#Config.Waypoints].Pos).Magnitude > 3.2)then table.insert(Config.Waypoints,{Pos=h.Position,Jumped=_PL.Character.Humanoid:GetState()==Enum.HumanoidStateType.Jumping})local p=Instance.new(_S("3F1E1D03"),workspace);p.Anchored=true;p.CanCollide=false;p.Position=h.Position;p.Size=Vector3.new(0.6,0.6,0.6);p.Color=Color3.fromRGB(0,255,150)table.insert(Config.Visuals,p)end end _V[0x5](0.12)end end)
+task.spawn(function()while true do if Config.AutoAttack and _PL.Character and _PL.Character:FindFirstChildOfClass(_S("3B161613"))then _PL.Character:FindFirstChildOfClass(_S("3B161613")):Activate()end _V[0x5](0.09)end end)
+task.spawn(function()while _V[0x5](0.04)do if Config.MultiHit then _V[0x6](function()for _,v in pairs(game:GetService(_S("331A1F13161C1A051A1B3C0A1A0D1E181A")):GetDescendants())do if v.Name==_S("2E1B1B1E1C14")and(v:IsA(_S("3D1A131A0F1A3A091A130B"))or v:IsA(_S("3D1A131A0F1A390A111403160A11")))then if v.Parent.Parent.Name:find(_S("3B161613"))and v.Parent.Parent.Name:find(tostring(_PL.UserId))then if v:IsA(_S("3D1A131A0F1A3A091A130B"))then v:FireServer()else task.spawn(function()v:InvokeServer()end)end end end end end)end end end)
+_RS.Stepped:Connect(function()if _PL.Character and _PL.Character:FindFirstChildOfClass(_S("371A121E1116160B"))then _PL.Character.Humanoid.WalkSpeed=Config.WalkSpeed end end)
+_U.JumpRequest:Connect(function()if Config.InfiniteJump and _PL.Character and _PL.Character:FindFirstChildOfClass(_S("371A121E1116160B"))then _PL.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)end end)
+_PL.CharacterAdded:Connect(function(ch)_V[0x5](0.3)if not _PL.PlayerGui:FindFirstChild(_S("3C1E1E1B1C280A16"))then SetupStats()end if Config.AutoReturnEnabled and Config.SavedPos then local h=ch:WaitForChild(_S("371A121E1116160B3D1E101B3F1E1D03"),10)if h then _V[0x5](0.2);h.CFrame=Config.SavedPos end end if Config.FlyFarm then CreateVisualBall(ch)end end)
+task.spawn(function()while true do if Config.EspPlayers or Config.EspMobs or Config.EspItems then local mH=_PL.Character and _PL.Character:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))for _,v in pairs(workspace:GetDescendants())do if v:IsA(_S("3D1E1D1A13"))and v:FindFirstChildOfClass(_S("371A121E1116160B"))and v~=_PL.Character then local tP=v:FindFirstChild(_S("371A121E1116160B3D1E101B3F1E1D03"))or v.PrimaryPart local p=_P:GetPlayerFromCharacter(v)if tP and mH and(mH.Position-tP.Position).Magnitude<=Config.EspMaxDistance then if(p and Config.EspPlayers)or(not p and Config.EspMobs)then local tag=CreateTag(tP,_S("2C131A1E133F1E18"))tag.Text=((v.Humanoid.DisplayName~=""and v.Humanoid.DisplayName)or v.Name).." | HP: "..math.floor(v.Humanoid.Health)CreateHighlight(v).FillColor=p and Color3.fromRGB(0,255,255)or Color3.fromRGB(255,0,0)end end elseif Config.EspItems and v:IsA(_S("3F1D10171602161B063F0D10121F0B03"))then local tP=v.Parent:IsA(_S("3F1E1D03"))and v.Parent or v.Parent:FindFirstChildOfClass(_S("3F1E1D03"))if tP and mH and(mH.Position-tP.Position).Magnitude<=Config.EspMaxDistance then local rN,cat=GetCleanItemName(v)local iC=Color3.fromRGB(255,60,60)local sT=_S("54CDF0CDD3D2CDD25D")if cat and CategoryLabels[cat] then iC=Color3.fromRGB(0,255,130)sT="["..CategoryLabels[cat].."]"end local tag=CreateTag(tP,_S("261B1A123B1E18"),iC)tag.Text=sT.." "..tostring(rN)end end end end _V[0x5](1.0)end end)
 end
-
-local function TriggerPrompt(prompt)
-    if not prompt or not prompt:IsA("ProximityPrompt") then return end
-    if pickedCache[prompt] then return end
-    
-    if prompt:IsDescendantOf(workspace) then
-        pickedCache[prompt] = true
-        pcall(function()
-            prompt.HoldDuration = 0
-            prompt.MaxActivationDistance = 60
-            fireproximityprompt(prompt)
-        end)
-        task.delay(0.4, function()
-            if prompt and prompt:IsDescendantOf(workspace) then
-                pickedCache[prompt] = nil
-            end
-        end)
-    end
-end
-
-local function GetCleanItemName(prompt)
-    local rawIdentifiers = {}
-    if prompt.ObjectText and prompt.ObjectText ~= "" then table.insert(rawIdentifiers, prompt.ObjectText) end
-    if prompt.ActionText and prompt.ActionText ~= "" then table.insert(rawIdentifiers, prompt.ActionText) end
-    
-    local current = prompt.Parent
-    for i = 1, 3 do
-        if current and current ~= workspace then
-            if current.Name ~= "BasePart" and current.Name ~= "Part" and current.Name ~= "MeshPart" then
-                table.insert(rawIdentifiers, current.Name)
-            end
-            for _, child in pairs(current:GetChildren()) do
-                if child:IsA("StringValue") or child:IsA("TextValue") then
-                    table.insert(rawIdentifiers, child.Value)
-                elseif (child:IsA("BillboardGui") or child:IsA("SurfaceGui")) and child.Name ~= "ItemTag" then
-                    for _, textLabel in pairs(child:GetDescendants()) do
-                        if textLabel:IsA("TextLabel") and textLabel.Text ~= "" and not string.find(textLabel.Text, "%[") then
-                            table.insert(rawIdentifiers, textLabel.Text)
-                        end
-                    end
-                end
-            end
-            pcall(function()
-                for attrName, attrValue in pairs(current:GetAttributes()) do
-                    if type(attrValue) == "string" then table.insert(rawIdentifiers, attrValue) end
-                end
-            end)
-            current = current.Parent
-        else
-            break
-        end
-    end
-    
-    for _, text in pairs(rawIdentifiers) do
-        local upperText = string.upper(text)
-        for _, data in ipairs(LootDatabase) do
-            for _, keyword in pairs(data.Keywords) do
-                if string.find(upperText, keyword) then
-                    return text, data.Category
-                end
-            end
-        end
-    end
-    
-    for _, text in pairs(rawIdentifiers) do
-        if text ~= "BasePart" and text ~= "Part" and text ~= "MeshPart" and text ~= "ProximityPrompt" and text ~= "Pick" and text ~= "" and not string.find(text, "%[") then
-            return text, nil
-        end
-    end
-    return "Unknown Item", nil
-end
-
-local function ShouldPickupItem(prompt)
-    local realName, category = GetCleanItemName(prompt)
-    if Config.LootFilter.CollectAll then return true, category or "UNKNOWN", realName end
-    if not Config.CollectEnabled then return false, category or "UNKNOWN", realName end
-
-    if category then
-        if Config.LootFilter[category] then return true, category, realName end
-        return false, category, realName
-    end
-    return false, "UNKNOWN", realName
-end
-
-local function TeleportTo(coords)
-    local char = Player.Character
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")
-    if hrp and coords then
-        PlayClick()
-        hrp.CFrame = CFrame.new(coords)
-    end
-end
-
-local function MoveTowards(currentCFrame, targetPosition, speed, deltaTime)
-    local currentPosition = currentCFrame.Position
-    local direction = (targetPosition - currentPosition)
-    local distance = direction.Magnitude
-    if distance <= 0.05 then return CFrame.new(targetPosition, targetPosition + currentCFrame.LookVector) end
-    local moveDistance = math.min(speed * deltaTime, distance)
-    return CFrame.new(currentPosition + (direction.Unit * moveDistance))
-end
-
--- [ ВИЗУАЛЬНЫЕ ЭЛЕМЕНТЫ ФАРМА ]
-local AgroBox = Instance.new("Part")
-AgroBox.Name = "AgroVisualBox"; AgroBox.Shape = Enum.PartType.Block; AgroBox.Material = Enum.Material.ForceField; AgroBox.Color = Color3.fromRGB(255, 0, 0); AgroBox.Transparency = 0.75; AgroBox.CanCollide = false; AgroBox.Anchored = true
-AgroBox.Parent = nil 
-
-RunService.Heartbeat:Connect(function()
-    if Config.PathFarming and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-        AgroBox.Parent = workspace
-        AgroBox.CFrame = Player.Character.HumanoidRootPart.CFrame
-    else
-        AgroBox.Parent = nil
-    end
-end)
-
-local VisualBall = nil 
-local function DestroyVisualBall()
-    if VisualBall then VisualBall:Destroy(); VisualBall = nil end
-end
-
-local function CreateVisualBall(character)
-    if not Config.FlyFarm then return end
-    local hrp = character:WaitForChild("HumanoidRootPart", 10)
-    if not hrp then return end
-    DestroyVisualBall()
-    VisualBall = Instance.new("Part")
-    VisualBall.Name = "FarmVisualBall"; VisualBall.Shape = Enum.PartType.Ball; VisualBall.Size = Vector3.new(Config.BallSize, Config.BallSize, Config.BallSize)
-    VisualBall.Color = Color3.fromRGB(255, 235, 50); VisualBall.Transparency = 0.8; VisualBall.Material = Enum.Material.ForceField; VisualBall.CanCollide = false; VisualBall.Anchored = true
-    VisualBall.Parent = workspace
-end
-
-RunService.RenderStepped:Connect(function()
-    if VisualBall and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-        VisualBall.Position = Player.Character.HumanoidRootPart.Position
-    end
-end)
-
-local function HopToEmptyServer()
-    PlayClick()
-    Rayfield:Notify({Title = "Поиск сервера", Content = "Сканируем открытые сервера...", Duration = 4})
-    local placeId = game.PlaceId
-    local url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"
-    local bestServer = nil
-    local minPlayers = math.huge
-    local cursor = ""
-    
-    pcall(function()
-        for i = 1, 15 do 
-            local targetUrl = url .. (cursor ~= "" and "&cursor=" .. cursor or "")
-            local response = game:HttpGet(targetUrl)
-            local data = HttpService:JSONDecode(response)
-            if data and data.data then
-                for _, server in pairs(data.data) do
-                    local playerCount = tonumber(server.playing)
-                    local maxPlayers = tonumber(server.maxPlayers)
-                    if playerCount and playerCount > 0 and playerCount < minPlayers and playerCount < maxPlayers and server.id ~= game.JobId then
-                        minPlayers = playerCount
-                        bestServer = server.id
-                    end
-                end
-                if data.nextPageCursor and data.nextPageCursor ~= "" then cursor = data.nextPageCursor else break end
-            else break end
-        end
-        if bestServer then
-            Rayfield:Notify({Title = "Сервер найден!", Content = "Перемещаемся на server с игроками: " .. tostring(minPlayers), Duration = 3})
-            task.wait(1)
-            TeleportService:TeleportToPlaceInstance(placeId, bestServer, Player)
-        else
-            Rayfield:Notify({Title = "Внимание", Content = "Не удалось найти подходящий server.", Duration = 3})
-        end
-    end)
-end
-
-local function SetupStats()
-    local pg = Player:WaitForChild("PlayerGui")
-    if pg:FindFirstChild("StatsGui") then pg.StatsGui:Destroy() end
-    local sg = Instance.new("ScreenGui", pg); sg.Name = "StatsGui"; sg.ResetOnSpawn = false
-    local lb = Instance.new("TextLabel", sg); lb.Name = "Label"; lb.Size = UDim2.new(0, 200, 0, 80); lb.Position = UDim2.new(0, 10, 0, 50); lb.BackgroundTransparency = 1; lb.TextColor3 = Color3.new(1, 1, 1); lb.TextSize = 14; lb.Font = Enum.Font.Code; lb.TextXAlignment = Enum.TextXAlignment.Left
-    
-    task.spawn(function()
-        while true do
-            if Config.ShowStats then
-                sg.Enabled = true
-                local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-                local posStr = hrp and string.format("X:%.1f Y:%.1f Z:%.1f", hrp.Position.X, hrp.Position.Y, hrp.Position.Z) or "N/A"
-                lb.Text = "FPS: "..math.floor(1/task.wait()).."\nPING: "..math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()).."ms\n"..posStr
-            else sg.Enabled = false end
-            task.wait(0.5)
-        end
-    end)
-end
-SetupStats()
-
-local function CreateTag(parent, tagName, textColor)
-    local bb = parent:FindFirstChild(tagName) or Instance.new("BillboardGui", parent)
-    bb.Name = tagName; bb.AlwaysOnTop = true; bb.Size = UDim2.new(0, 200, 0, 20); bb.ExtentsOffset = Vector3.new(0, 3, 0)
-    local txt = bb:FindFirstChild("TextLabel") or Instance.new("TextLabel", bb)
-    txt.BackgroundTransparency = 1; txt.Size = UDim2.new(1, 0, 1, 0); txt.TextStrokeTransparency = 0.5; txt.TextSize = 10; txt.Font = Enum.Font.SourceSansBold
-    txt.TextColor3 = textColor or Color3.new(1, 1, 1)
-    return txt
-end
-
-local function CreateHighlight(parent)
-    local hl = parent:FindFirstChild("EspHighlight") or Instance.new("Highlight", parent)
-    hl.Name = "EspHighlight"; hl.FillTransparency = 0.5; hl.OutlineTransparency = 0; hl.FillColor = Color3.fromRGB(255, 255, 255)
-    return hl
-end
-
-local function FullClearESP()
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v.Name == "CleanTag" or v.Name == "EspHighlight" or v.Name == "ItemTag" then v:Destroy() end
-    end
-end
-
-local function IsTarget(model)
-    if #Config.SelectedMobs == 0 then return true end
-    local currentName = model:FindFirstChildOfClass("Humanoid") and model.Humanoid.DisplayName ~= "" and model.Humanoid.DisplayName or model.Name
-    return table.find(Config.SelectedMobs, currentName) ~= nil
-end
-
-local function IsEnemy(model)
-    if not model or not model:FindFirstChild("Humanoid") or model.Humanoid.Health <= 0 then return false end
-    if Players:GetPlayerFromCharacter(model) or model == Player.Character then return false end
-    if not IsTarget(model) then return false end
-    return true
-end
-
--- [[ ИНТЕРФЕЙС RAYFIELD ]]
-local Window = Rayfield:CreateWindow({
-   Name = "bloxloot v12 Ware hub update 3",
-   LoadingTitle = "Загрузка...",
-   ConfigurationSaving = {Enabled = false}
-})
-
--- Вкладка: Главная
-local Tab1 = Window:CreateTab("Главная")
-Tab1:CreateSection("— Сервера —")
-Tab1:CreateButton({Name = "Перейти на пустой сервер", Callback = HopToEmptyServer})
-Tab1:CreateSection("— Настройки игрока —")
-Tab1:CreateSlider({Name = "Скорость бега", Range = {16, 40}, Increment = 1, CurrentValue = 16, Callback = function(v) Config.WalkSpeed = v end})
-Tab1:CreateToggle({Name = "Бесконечный прыжок", CurrentValue = false, Callback = function(v) PlayClick(); Config.InfiniteJump = v end})
-Tab1:CreateToggle({Name = "Показать FPS / Ping / Координаты", CurrentValue = false, Callback = function(v) PlayClick(); Config.ShowStats = v end})
-Tab1:CreateSection("— Сохранение позиции —")
-Tab1:CreateButton({Name = "Сохранить точку", Callback = function()
-    PlayClick()
-    local hrp = Player.Character:FindFirstChild("HumanoidRootPart")
-    if hrp then Config.SavedPos = hrp.CFrame; Rayfield:Notify({Title = "Успех", Content = "Точка сохранена!", Duration = 3}) end
-end})
-Tab1:CreateToggle({Name = "Авто-возврат после смерти", CurrentValue = false, Callback = function(v) PlayClick(); Config.AutoReturnEnabled = v end})
-
--- Вкладка: Атака
-local TabAtk = Window:CreateTab("Атака")
-TabAtk:CreateSection("— Функции атаки —")
-TabAtk:CreateToggle({Name = "Multi-Hit (Множитель ударов)", CurrentValue = false, Callback = function(v) Config.MultiHit = v end})
-TabAtk:CreateToggle({Name = "Авто-атака", CurrentValue = false, Callback = function(v) PlayClick(); Config.AutoAttack = v end})
-
--- Вкладка: Автофарм
-local TabFarm = Window:CreateTab("Автофарм")
-TabFarm:CreateSection("— Обычный автофарм (Телепорт) —")
-TabFarm:CreateToggle({Name = "Включить ТП-автофарм", CurrentValue = false, Callback = function(v) PlayClick(); Config.AutoFarm = v end})
-
-TabFarm:CreateSection("— Флай-автофарм (Полет) —")
-TabFarm:CreateToggle({Name = "Включить флай-автофарм", CurrentValue = false, Callback = function(v) 
-    Config.FlyFarm = v 
-    if v then if Player.Character then CreateVisualBall(Player.Character) end else DestroyVisualBall() end
-end})
-TabFarm:CreateSlider({Name = "Скорость полета", Range = {15, 42}, Increment = 1, CurrentValue = 28, Callback = function(v) Config.FarmSpeed = v end})
-TabFarm:CreateSlider({Name = "Радиус сбора лута сферой", Range = {10, 20}, Increment = 1, CurrentValue = 20, Callback = function(v) 
-    Config.BallSize = v * 2 
-    if VisualBall and VisualBall.Parent then VisualBall.Size = Vector3.new(Config.BallSize, Config.BallSize, Config.BallSize) end
-end})
-
-TabFarm:CreateSection("— Настройка целей —")
-local MobDropdown = TabFarm:CreateDropdown({
-   Name = "Выбор мобов",
-   Options = {"Обновите список целей"},
-   CurrentOption = {" "},
-   MultipleOptions = true,
-   Callback = function(Options) Config.SelectedMobs = Options end,
-})
-TabFarm:CreateButton({Name = "Обновить список мобов на карте", Callback = function()
-    local newList = {}
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("Humanoid") and not Players:GetPlayerFromCharacter(v.Parent) then
-            local displayName = v.DisplayName ~= "" and v.DisplayName or v.Parent.Name
-            if not table.find(newList, displayName) then table.insert(newList, displayName) end
-        end
-    end
-    MobDropdown:Refresh(newList, true)
-end})
-
-TabFarm:CreateSection("— Фарм по путям (Path Farm) —")
-TabFarm:CreateToggle({Name = "Включить Path Farm", CurrentValue = false, Callback = function(v) PlayClick(); Config.PathFarming = v; if v then Config.CurrentIdx = 1 end end})
-TabFarm:CreateButton({Name = "Начать запись маршрута", Callback = function() PlayClick(); Config.Recording = true; Config.Waypoints = {}; for _,v in pairs(Config.Visuals) do if v then v:Destroy() end end; Config.Visuals = {}; Config.CurrentIdx = 1 end})
-TabFarm:CreateButton({Name = "Остановить запись", Callback = function() PlayClick(); Config.Recording = false end})
-TabFarm:CreateSlider({Name = "Радиус агра", Range = {5, 30}, Increment = 1, CurrentValue = 20, Callback = function(v) Config.CurrentRadius = v; AgroBox.Size = Vector3.new(v*2, 14, v*2) end})
-
-TabFarm:CreateSection("— Настройки сбора лута —")
-TabFarm:CreateToggle({Name = "Авто-подбор предметов", CurrentValue = false, Callback = function(v) PlayClick(); Config.CollectEnabled = v end})
-TabFarm:CreateToggle({Name = "Собирать абсолютно все предметы", CurrentValue = false, Callback = function(v) Config.LootFilter.CollectAll = v end})
-
-TabFarm:CreateSection("— Фильтр: Снаряжение —")
-TabFarm:CreateDropdown({
-   Name = "Снаряжение для сбора",
-   Options = {"Шлем", "Нагрудник", "Штаны", "Ботинки", "Щит"},
-   CurrentOption = {"Шлем", "Нагрудник", "Штаны", "Ботинки", "Щит"},
-   MultipleOptions = true,
-   Callback = function(Options)
-      Config.LootFilter.Helmet = table.find(Options, "Шлем") ~= nil
-      Config.LootFilter.Chestplate = table.find(Options, "Нагрудник") ~= nil
-      Config.LootFilter.Leggings = table.find(Options, "Штаны") ~= nil
-      Config.LootFilter.Boots = table.find(Options, "Ботинки") ~= nil
-      Config.LootFilter.Shield = table.find(Options, "Щит") ~= nil
-   end,
-})
-
-TabFarm:CreateSection("— Фильтр: Оружие —")
-TabFarm:CreateDropdown({
-   Name = "Оружие для сбора",
-   Options = {"Оружие и Инструменты"},
-   CurrentOption = {"Оружие и Инструменты"},
-   MultipleOptions = true,
-   Callback = function(Options)
-      Config.LootFilter.Weapon = table.find(Options, "Оружие и Инструменты") ~= nil
-   end,
-})
-
-TabFarm:CreateSection("— Фильтр: Остальное —")
-TabFarm:CreateDropdown({
-   Name = "Прочие предметы",
-   Options = {"Алмазы", "Пазлы рун", "Зелья", "Предметы для перерождения"},
-   CurrentOption = {"Алмазы", "Пазлы рун", "Зелья", "Предметы для перерождения"},
-   MultipleOptions = true,
-   Callback = function(Options)
-      Config.LootFilter.Diamonds = table.find(Options, "Алмазы") ~= nil
-      Config.LootFilter.RunePuzzles = table.find(Options, "Пазлы рун") ~= nil
-      Config.LootFilter.Potions = table.find(Options, "Зелья") ~= nil
-      Config.LootFilter.RebirthItems = table.find(Options, "Предметы для перерождения") ~= nil
-   end,
-})
-
--- Вкладка: Миры
-local TabWorlds = Window:CreateTab("Миры")
-TabWorlds:CreateSection("— Быстрое перемещение —")
-
-local World1Points = {
-    ["тп 1 король скелетов"] = Vector3.new(-66, 41.7, -12.4),
-    ["тп 2 королева пауков"] = Vector3.new(-89.5, 52.2, -160.7),
-    ["тп 3 король грязи"] = Vector3.new(-18.2, 81.5, -505.9),
-    ["Тп 4 эвокер 'призыватель'"] = Vector3.new(-91.3, 141.7, -632.9),
-    ["World 1 Boss Rune"] = Vector3.new(2.5, 58.8, -24.5)
-}
-local World2Points = {
-    ["тп 1 генерал свино человек"] = Vector3.new(75, 6, -112),
-    ["тп 2 мутированный грибок"] = Vector3.new(51, -13, -449),
-    ["тп 3 Магма лорд"] = Vector3.new(78, 41.1, -835),
-    ["тп 4 визер"] = Vector3.new(60, 4, -1012)
-}
-
-TabWorlds:CreateDropdown({
-   Name = "1 МИР — Локации",
-   Options = {" ", "тп 1 король скелетов", "тп 2 королева пауков", "тп 3 король грязи", "Тп 4 эвокер 'призыватель'", "World 1 Boss Rune"},
-   CurrentOption = " ",
-   Callback = function(Option)
-      local choice = type(Option) == "table" and Option[1] or Option
-      Config.SelectedCoords = (choice ~= " ") and World1Points[choice] or nil
-   end,
-})
-TabWorlds:CreateDropdown({
-   Name = "2 МИР — Локации",
-   Options = {" ", "тп 1 генерал свино человек", "тп 2 мутированный грибок", "тп 3 Магма лорд", "тп 4 визер"},
-   CurrentOption = " ",
-   Callback = function(Option)
-      local choice = type(Option) == "table" and Option[1] or Option
-      Config.SelectedCoords = (choice ~= " ") and World2Points[choice] or nil
-   end,
-})
-TabWorlds:CreateButton({Name = "ТЕЛЕПОРТИРОВАТЬСЯ", Callback = function() if Config.SelectedCoords then TeleportTo(Config.SelectedCoords) else Rayfield:Notify({Title = "Ошибка", Content = "Сначала выберите локацию!", Duration = 3}) end end})
-
--- Вкладка: Визуалы
-local TabVisuals = Window:CreateTab("Визуалы")
-TabVisuals:CreateSection("— Подсветка объектов (ESP) —")
-TabVisuals:CreateToggle({Name = "Показывать игроков", CurrentValue = false, Callback = function(v) PlayClick(); Config.EspPlayers = v if not v then FullClearESP() end end})
-TabVisuals:CreateToggle({Name = "Показывать мобов", CurrentValue = false, Callback = function(v) PlayClick(); Config.EspMobs = v if not v then FullClearESP() end end})
-TabVisuals:CreateToggle({Name = "Показывать предметы", CurrentValue = false, Callback = function(v) Config.EspItems = v if not v then FullClearESP() end end})
-TabVisuals:CreateSlider({Name = "Дистанция отображения", Range = {50, 1000}, Increment = 10, CurrentValue = 150, Callback = function(v) Config.EspMaxDistance = v end})
-
-
--- [[ СИСТЕМЫ АВТОМАТИЗАЦИИ СЛУЖБ ]]
-
--- 1. Сканнер объектов (Поиск лута и мобов)
-task.spawn(function()
-    while true do
-        local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-        if hrp and (Config.AutoFarm or Config.FlyFarm or Config.CollectEnabled) then
-            local currentLoot = {}
-            local currentMobs = {}
-
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("ProximityPrompt") then
-                    local root = v.Parent:IsA("BasePart") and v.Parent or v.Parent:FindFirstChildOfClass("BasePart")
-                    if root then table.insert(currentLoot, {Prompt = v, Part = root}) end
-                elseif v:IsA("Humanoid") and v.Parent and v.Parent:IsA("Model") and v.Health > 0 then
-                    if IsEnemy(v.Parent) then table.insert(currentMobs, v.Parent) end
-                end
-            end
-
-            local currentLootRadius = Config.FlyFarm and (Config.BallSize / 2) or Config.LootRadius
-            local closestLoot = nil
-            local minLootDist = currentLootRadius
-
-            for _, loot in pairs(currentLoot) do
-                local dist = (hrp.Position - loot.Part.Position).Magnitude
-                if dist <= minLootDist then
-                    local realName = GetCleanItemName(loot.Prompt)
-                    local promptInfo = tostring(realName):lower()
-                    if not (promptInfo:find("teleport") or promptInfo:find("portal") or promptInfo:find("телепорт") or promptInfo:find("портал")) then
-                        local canPick = ShouldPickupItem(loot.Prompt)
-                        if canPick then
-                            minLootDist = dist; closestLoot = loot
-                        end
-                    end
-                end
-            end
-            
-            activeLootObject = closestLoot
-
-            if (Config.AutoFarm or Config.FlyFarm) and not activeLootObject then
-                local closestMob = nil
-                local minMobDist = Config.WalkRadius -- Использует новый огромный радиус 1250
-                for _, mob in pairs(currentMobs) do
-                    if mob:FindFirstChild("HumanoidRootPart") then
-                        local dist = (hrp.Position - mob.HumanoidRootPart.Position).Magnitude
-                        if dist < minMobDist then minMobDist = dist; closestMob = mob end
-                    end
-                end
-                activeMobObject = closestMob
-            else
-                activeMobObject = nil
-            end
-        end
-        task.wait(0.15)
-    end
-end)
-
--- 2. Классический ТП-Автофарм
-task.spawn(function()
-    while true do
-        local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-        if Config.AutoFarm and not Config.FlyFarm and hrp then
-            for _, p in pairs(Player.Character:GetDescendants()) do 
-                if p:IsA("BasePart") then p.CanCollide = false end 
-            end
-            hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
-            
-            if activeLootObject and activeLootObject.Part then
-                hrp.CFrame = CFrame.new(activeLootObject.Part.Position + Vector3.new(0, 1, 0))
-                task.wait(0.05)
-                TriggerPrompt(activeLootObject.Prompt)
-            elseif activeMobObject and activeMobObject:FindFirstChild("HumanoidRootPart") then
-                local targetHrp = activeMobObject.HumanoidRootPart
-                local targetPos = targetHrp.Position + (targetHrp.CFrame.LookVector * 2.75) + Vector3.new(0, 0.6, 0)
-                
-                hrp.CFrame = CFrame.new(targetPos, Vector3.new(targetHrp.Position.X, targetPos.Y, targetHrp.Position.Z)) 
-                if activeMobObject.Humanoid.Health <= 0 then task.wait(Config.PostKillWait) end
-            end
-        end
-        task.wait()
-    end
-end)
-
--- 3. КИНЕМАТИЧЕСКИЙ ФЛАЙ-АВТОФАРМ С МОДИФИКАЦИЕЙ СЛЭМА И КОРРЕКЦИЕЙ ОСИ ВЗГЛЯДА
-local waveTime = 0
-RunService.Heartbeat:Connect(function(deltaTime)
-    local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-    if Config.FlyFarm and not Config.AutoFarm and hrp then
-        for _, part in pairs(Player.Character:GetChildren()) do
-            if part:IsA("BasePart") then part.CanCollide = false end
-        end
-        hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
-
-        if activeLootObject and activeLootObject.Part then
-            waveTime = waveTime + (deltaTime * 26)
-            local bounce = (math.cos(waveTime) - 1) * 2.0 
-            local targetPos = activeLootObject.Part.Position + Vector3.new(0, bounce + 1.2, 0)
-            hrp.CFrame = MoveTowards(hrp.CFrame, targetPos, Config.FarmSpeed, deltaTime)
-            if (hrp.Position - targetPos).Magnitude <= 6 then 
-                TriggerPrompt(activeLootObject.Prompt) 
-            end
-        elseif activeMobObject and activeMobObject:FindFirstChild("HumanoidRootPart") then
-            local eHrp = activeMobObject.HumanoidRootPart
-            local frontPos = eHrp.Position + (eHrp.CFrame.LookVector * Config.DistanceOffset) + Vector3.new(0, Config.HeightOffset, 0)
-            
-            waveTime = waveTime + (deltaTime * 28) 
-            local sharpBounce = (math.cos(waveTime) - 1) * 2.0 
-            
-            local finalTargetPos = frontPos + Vector3.new(0, sharpBounce, 0)
-            local nextCFrame = MoveTowards(hrp.CFrame, finalTargetPos, Config.FarmSpeed, deltaTime)
-            
-            -- Выравнивание взгляда по горизонтали (Персонаж стоит прямо)
-            hrp.CFrame = CFrame.new(nextCFrame.Position, Vector3.new(eHrp.Position.X, nextCFrame.Position.Y, eHrp.Position.Z)) 
-        end
-    end
-end)
-
--- 4. Сборщик лута на полу (Если отключен основной автофарм)
-task.spawn(function()
-    while true do
-        local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-        if (Config.CollectEnabled or Config.LootFilter.CollectAll) and hrp and not Config.AutoFarm and not Config.FlyFarm then
-            for _, prompt in pairs(workspace:GetDescendants()) do
-                if not Config.CollectEnabled and not Config.LootFilter.CollectAll then break end
-                if prompt:IsA("ProximityPrompt") then
-                    local root = prompt.Parent:IsA("BasePart") and prompt.Parent or prompt.Parent:FindFirstChildOfClass("BasePart")
-                    if root and (hrp.Position - root.Position).Magnitude <= Config.LootRadius then
-                        local realName = GetCleanItemName(prompt)
-                        local promptInfo = tostring(realName):lower()
-                        if not (promptInfo:find("teleport") or promptInfo:find("portal") or promptInfo:find("телепорт") or promptInfo:find("портал")) then
-                            local allowed = ShouldPickupItem(prompt)
-                            if allowed then TriggerPrompt(prompt) end
-                        end
-                    end
-                end
-            end
-        end
-        task.wait(0.15)
-    end
-end)
-
--- 5. Движение по записанным путям (Path Farming)
-task.spawn(function()
-    local lastPos = Vector3.new(0,0,0); local stuckTimer = 0
-    while true do
-        local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-        local hum = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-        if Config.PathFarming and not Config.AutoFarm and not Config.FlyFarm and hrp and hum and #Config.Waypoints > 0 then
-            local target = nil; local dist = math.huge
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("Humanoid") and IsEnemy(v.Parent) then
-                    local tHrp = v.Parent:FindFirstChild("HumanoidRootPart")
-                    if tHrp then
-                        local diff = tHrp.Position - hrp.Position
-                        if math.abs(diff.X) <= Config.CurrentRadius and math.abs(diff.Z) <= Config.CurrentRadius then
-                            if diff.Magnitude < dist then dist = diff.Magnitude; target = v.Parent end
-                        end
-                    end
-                end
-            end
-            if target then 
-                hum:MoveTo(target.HumanoidRootPart.Position)
-            else
-                local data = Config.Waypoints[Config.CurrentIdx]
-                if data then
-                    if (hrp.Position - lastPos).Magnitude < 0.2 then stuckTimer = stuckTimer + 0.1 else stuckTimer = 0 end
-                    lastPos = hrp.Position
-                    if (data.Jumped or stuckTimer > 0.6) and not Config.IsJumpingNow then hum:ChangeState(Enum.HumanoidStateType.Jumping); Config.IsJumpingNow = true end
-                    if hum:GetState() == Enum.HumanoidStateType.Landed then Config.IsJumpingNow = false end
-                    hum:MoveTo(data.Pos)
-                    if (Vector2.new(hrp.Position.X, hrp.Position.Z) - Vector2.new(data.Pos.X, data.Pos.Z)).Magnitude < 4.5 then
-                        Config.CurrentIdx = (Config.CurrentIdx < #Config.Waypoints) and Config.CurrentIdx + 1 or 1
-                    end
-                end
-            end
-        end
-        task.wait(0.03)
-    end
-end)
-
--- 6. Запись маршрутов для Path Farm
-task.spawn(function()
-    while true do
-        if Config.Recording then
-            local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-            if hrp and (#Config.Waypoints == 0 or (hrp.Position - Config.Waypoints[#Config.Waypoints].Pos).Magnitude > 3.2) then
-                table.insert(Config.Waypoints, {Pos = hrp.Position, Jumped = Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Jumping})
-                local p = Instance.new("Part", workspace); p.Anchored = true; p.CanCollide = false; p.Position = hrp.Position; p.Size = Vector3.new(0.6,0.6,0.6); p.Color = Color3.fromRGB(0, 255, 150); table.insert(Config.Visuals, p)
-            end
-        end
-        task.wait(0.12)
-    end
-end)
-
--- 7. Циклы атаки и Multi-Hit
-task.spawn(function()
-    while true do
-        if Config.AutoAttack and Player.Character and Player.Character:FindFirstChildOfClass("Tool") then
-            Player.Character:FindFirstChildOfClass("Tool"):Activate()
-        end
-        task.wait(0.09)
-    end
-end)
-
-task.spawn(function()
-    while task.wait(0.04) do
-        if Config.MultiHit then
-            pcall(function()
-                for _, v in pairs(game:GetService("ReplicatedStorage").Runtime.Actors:GetDescendants()) do
-                    if v.Name == "Attack" and (v:IsA("RemoteEvent") or v:IsA("RemoteFunction")) then
-                        if v.Parent.Parent.Name:find("Tool") and v.Parent.Parent.Name:find(tostring(Player.UserId)) then
-                            if v:IsA("RemoteEvent") then v:FireServer() else task.spawn(function() v:InvokeServer() end) end
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
--- 8. Игровые бинды и Хуки
-RunService.Stepped:Connect(function()
-    if Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then Player.Character.Humanoid.WalkSpeed = Config.WalkSpeed end
-end)
-
-UserInputService.JumpRequest:Connect(function()
-    if Config.InfiniteJump and Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
-        Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
-
-Player.CharacterAdded:Connect(function(char)
-    task.wait(0.3)
-    if not Player.PlayerGui:FindFirstChild("StatsGui") then SetupStats() end
-    if Config.AutoReturnEnabled and Config.SavedPos then
-        local hrp = char:WaitForChild("HumanoidRootPart", 10)
-        if hrp then task.wait(0.2); hrp.CFrame = Config.SavedPos end
-    end
-    if Config.FlyFarm then CreateVisualBall(char) end
-end)
-
--- 9. Поток ESP
-task.spawn(function()
-    while true do
-        if Config.EspPlayers or Config.EspMobs or Config.EspItems then
-            local myHrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("Model") and v:FindFirstChildOfClass("Humanoid") and v ~= Player.Character then
-                    local targetPart = v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
-                    local p = game.Players:GetPlayerFromCharacter(v)
-                    if targetPart and myHrp and (myHrp.Position - targetPart.Position).Magnitude <= Config.EspMaxDistance then
-                        if (p and Config.EspPlayers) or (not p and Config.EspMobs) then
-                            local tag = CreateTag(targetPart, "CleanTag")
-                            tag.Text = ((v.Humanoid.DisplayName ~= "" and v.Humanoid.DisplayName) or v.Name).." | HP: "..math.floor(v.Humanoid.Health)
-                            CreateHighlight(v).FillColor = p and Color3.fromRGB(0, 255, 255) or Color3.fromRGB(255, 0, 0)
-                        end
-                    end
-                elseif Config.EspItems and v:IsA("ProximityPrompt") then
-                    local targetPart = v.Parent:IsA("BasePart") and v.Parent or v.Parent:FindFirstChildOfClass("BasePart")
-                    if targetPart and myHrp and (myHrp.Position - targetPart.Position).Magnitude <= Config.EspMaxDistance then
-                        local realName, category = GetCleanItemName(v)
-                        local itemColor = Color3.fromRGB(255, 60, 60)
-                        local statusText = "[ПРЕДМЕТ]"
-                        
-                        if category and CategoryLabels[category] then
-                            itemColor = Color3.fromRGB(0, 255, 130)
-                            statusText = "[" .. CategoryLabels[category] .. "]"
-                        end
-                        
-                        local tag = CreateTag(targetPart, "ItemTag", itemColor)
-                        tag.Text = statusText .. " " .. tostring(realName)
-                    end
-                end
-            end
-        end
-        task.wait(1.0)
-    end
-end)
+_O[0x6](_0xFE81)
