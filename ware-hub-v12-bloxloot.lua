@@ -17,10 +17,10 @@ end)
 
 local L = {
     EN = {
-        Main = "Main", Atk = "Attack", Farm = "AutoFarm", Worlds = "Worlds", Vis = "Visuals",
+        Main = "Main", Atk = "Attack", Farm = "AutoFarm", Worlds = "Worlds", Vis = "Visuals", Misc = "Misc",
         LangSec = "— Language —", LangSel = "Select Language", LangWarn = "Restart script to apply language!",
         ServSec = "— Servers —", Hop = "Hop to Empty Server",
-        PlrSec = "— Player Settings —", Walk = "Walk Speed", InfJ = "Infinite Jump", Stats = "Show FPS / Ping",
+        PlrSec = "— Player Settings —", Walk = "Walk Speed", InfJ = "Infinite Jump", Stats = "Show FPS / Ping / Coords",
         PosSec = "— Save Position —", PosBtn = "Save Point", AutoRet = "Auto-Return on Death",
         AtkSec = "— Attack Functions —", FastAtk = "Fast Attack (Manual/Tap)", AutoAtk = "Auto-Attack",
         TpFarmSec = "— Normal AutoFarm (TP) —", TpFarmTog = "Enable TP AutoFarm",
@@ -32,15 +32,16 @@ local L = {
         FiltWep = "— Filter: Weapons —", WepSel = "Weapons to Collect",
         FiltOth = "— Filter: Others —", OthSel = "Other Items",
         W1 = "World 1 Locations", W2 = "World 2 Locations", TPBtn = "TELEPORT",
-        EspSec = "— Object Highlight (ESP) —", EspPlr = "Show Players", EspMob = "Show Mobs", EspItm = "Show Items", EspDist = "Display Distance"
+        EspSec = "— Object Highlight (ESP) —", EspPlr = "Show Players", EspMob = "Show Mobs", EspItm = "Show Items", EspDist = "Display Distance",
+        GodModeSec = "— Survival —", GodMode = "God Mode (Invincibility)"
     },
     RU = {
-        Main = "Главная", Atk = "Атака", Farm = "Автофарм", Worlds = "Миры", Vis = "Визуалы",
+        Main = "Главная", Atk = "Атака", Farm = "Автофарм", Worlds = "Миры", Vis = "Визуалы", Misc = "Прочее",
         LangSec = "— Выбор языка —", LangSel = "Язык (Language)", LangWarn = "Перезапустите скрипт для применения!",
         ServSec = "— Сервера —", Hop = "Перейти на пустой сервер",
-        PlrSec = "— Настройки игрока —", Walk = "Скорость бега", InfJ = "Бесконечный прыжок", Stats = "Показать FPS / Ping",
+        PlrSec = "— Настройки игрока —", Walk = "Скорость бега", InfJ = "Бесконечный прыжок", Stats = "Показать FPS / Ping / Координаты",
         PosSec = "— Сохранение позиции —", PosBtn = "Сохранить точку", AutoRet = "Авто-возврат после смерти",
-        AtkSec = "— Функции атаки —", FastAtk = "Фаст-атака (Ручная)", AutoAtk = "Авто-атака",
+        AtkSec = "— Функции атаки —", FastAtk = "Фаст-атака (Ручная)", AutoAtk = "Auto-Attack",
         TpFarmSec = "— Обычный автофарм (Телепорт) —", TpFarmTog = "Включить ТП-автофарм",
         FlyFarmSec = "— Флай-автофарм (Полет) —", FlyFarmTog = "Включить флай-автофарм", FlySpd = "Скорость полета", SphereRad = "Радиус сбора лута сферой",
         MobSec = "— Настройка целей —", MobSel = "Выбор мобов", MobUpd = "Обновить список мобов на карте",
@@ -50,14 +51,15 @@ local L = {
         FiltWep = "— Фильтр: Оружие —", WepSel = "Оружие для сбора",
         FiltOth = "— Фильтр: Остальное —", OthSel = "Прочие предметы",
         W1 = "1 МИР — Локации", W2 = "2 МИР — Локации", TPBtn = "ТЕЛЕПОРТИРОВАТЬСЯ",
-        EspSec = "— Подсветка объектов (ESP) —", EspPlr = "Показывать игроков", EspMob = "Показывать мобов", EspItm = "Показывать предметы", EspDist = "Дистанция отображения"
+        EspSec = "— Подсветка объектов (ESP) —", EspPlr = "Показывать игроков", EspMob = "Показывать мобов", EspItm = "Показывать предметы", EspDist = "Дистанция отображения",
+        GodModeSec = "— Выживание —", GodMode = "God Mode (Бессмертие)"
     }
 }
 
 -- [ КОНФИГ ]
 local Config = {
     WalkSpeed = 16, InfiniteJump = false, ShowStats = false, SavedPos = nil, AutoReturnEnabled = false,
-    AutoAttack = false, FastAttackEnabled = false,
+    AutoAttack = false, FastAttackEnabled = false, GodMode = false,
     AutoFarm = false, FlyFarm = false, FarmSpeed = 28, HeightOffset = 1.5, DistanceOffset = 3.5, 
     BallSize = 40, WalkRadius = 1250, PostKillWait = 0.3, SelectedMobs = {}, 
     PathFarming = false, Recording = false, CurrentRadius = 20, CurrentIdx = 1, IsJumpingNow = false, Waypoints = {}, Visuals = {},
@@ -156,6 +158,27 @@ local function MoveTowards(currentCFrame, targetPosition, speed, deltaTime)
     local distance = direction.Magnitude
     if distance <= 0.05 then return CFrame.new(targetPosition, targetPosition + currentCFrame.LookVector) end
     return CFrame.new(currentPosition + (direction.Unit * math.min(speed * deltaTime, distance)))
+end
+
+-- [ ФУНКЦИЯ ОПТИМИЗИРОВАННОГО БЕССМЕРТИЯ ]
+local function ApplyGodModeHook(char)
+    if not char then return end
+    local hum = char:WaitForChild("Humanoid", 10)
+    if not hum then return end
+    
+    pcall(function()
+        local mt = getrawmetatable(hum)
+        if mt and mt.__index then
+            setreadonly(mt, false)
+            local oldIndex = mt.__index
+            mt.__index = newcclosure(function(self, key)
+                if key == "Health" and self == hum and Config.GodMode then
+                    return hum.MaxHealth
+                end
+                return oldIndex(self, key)
+            end)
+        end
+    end)
 end
 
 -- [ ВИЗУАЛЫ ]
@@ -258,20 +281,20 @@ Tab1:CreateDropdown({
     end,
 })
 
-Tab1:CreateSection(L[Language].ServSec)
-Tab1:CreateButton({Name = L[Language].Hop, Callback = HopToEmptyServer})
+Tab1:CreateSection(L[Language].GodModeSec)
+Tab1:CreateToggle({Name = L[Language].GodMode, CurrentValue = false, Callback = function(v) 
+    PlayClick()
+    Config.GodMode = v 
+    if Player.Character then
+        for _, part in pairs(Player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then part.CanTouch = not v end
+        end
+    end
+end})
 
 Tab1:CreateSection(L[Language].PlrSec)
 Tab1:CreateSlider({Name = L[Language].Walk, Range = {16, 40}, Increment = 1, CurrentValue = 16, Callback = function(v) Config.WalkSpeed = v end})
 Tab1:CreateToggle({Name = L[Language].InfJ, CurrentValue = false, Callback = function(v) PlayClick(); Config.InfiniteJump = v end})
-Tab1:CreateToggle({Name = L[Language].Stats, CurrentValue = false, Callback = function(v) PlayClick(); Config.ShowStats = v end})
-
-Tab1:CreateSection(L[Language].PosSec)
-Tab1:CreateButton({Name = L[Language].PosBtn, Callback = function()
-    PlayClick(); local hrp = Player.Character:FindFirstChild("HumanoidRootPart")
-    if hrp then Config.SavedPos = hrp.CFrame; Rayfield:Notify({Title = "Saved", Content = "Point Saved!", Duration = 2}) end
-end})
-Tab1:CreateToggle({Name = L[Language].AutoRet, CurrentValue = false, Callback = function(v) PlayClick(); Config.AutoReturnEnabled = v end})
 
 -- Вкладка: Атака
 local TabAtk = Window:CreateTab(L[Language].Atk)
@@ -352,6 +375,23 @@ TabVisuals:CreateToggle({Name = L[Language].EspPlr, CurrentValue = false, Callba
 TabVisuals:CreateToggle({Name = L[Language].EspMob, CurrentValue = false, Callback = function(v) PlayClick(); Config.EspMobs = v if not v then FullClearESP() end end})
 TabVisuals:CreateToggle({Name = L[Language].EspItm, CurrentValue = false, Callback = function(v) Config.EspItems = v if not v then FullClearESP() end end})
 TabVisuals:CreateSlider({Name = L[Language].EspDist, Range = {50, 1000}, Increment = 10, CurrentValue = 150, Callback = function(v) Config.EspMaxDistance = v end})
+
+-- Вкладка: Прочее (Misc)
+local TabMisc = Window:CreateTab(L[Language].Misc)
+
+TabMisc:CreateSection(L[Language].ServSec)
+TabMisc:CreateButton({Name = L[Language].Hop, Callback = HopToEmptyServer})
+
+TabMisc:CreateSection(L[Language].PosSec)
+TabMisc:CreateButton({Name = L[Language].PosBtn, Callback = function()
+    PlayClick(); local hrp = Player.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then Config.SavedPos = hrp.CFrame; Rayfield:Notify({Title = "Saved", Content = "Point Saved!", Duration = 2}) end
+end})
+TabMisc:CreateToggle({Name = L[Language].AutoRet, CurrentValue = false, Callback = function(v) PlayClick(); Config.AutoReturnEnabled = v end})
+
+TabMisc:CreateSection("— HUD Settings —")
+TabMisc:CreateToggle({Name = L[Language].Stats, CurrentValue = false, Callback = function(v) PlayClick(); Config.ShowStats = v end})
+
 
 -- [[ ФАСТ-АТАКА (РУЧНАЯ ПО ТАПУ) ]]
 UserInputService.InputBegan:Connect(function(input, gpe)
@@ -542,14 +582,30 @@ task.spawn(function()
                 end
             end)
         end
-        task.wait(0.05) -- Уменьшенная задержка для максимальной скорости спама
+        task.wait(0.05)
     end
 end)
 
--- 8. Игровые бинды
-RunService.Stepped:Connect(function() if Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then Player.Character.Humanoid.WalkSpeed = Config.WalkSpeed end end)
+-- 8. Игровые бинды + Защита CanTouch для God Mode
+RunService.Stepped:Connect(function() 
+    if Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then 
+        Player.Character.Humanoid.WalkSpeed = Config.WalkSpeed 
+        
+        -- Постоянно отрубаем тач при включенном God Mode
+        if Config.GodMode then
+            for _, part in pairs(Player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanTouch = false end
+            end
+        end
+    end 
+end)
+
 UserInputService.JumpRequest:Connect(function() if Config.InfiniteJump and Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then Player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end end)
+
+if Player.Character then task.spawn(ApplyGodModeHook, Player.Character) end
+
 Player.CharacterAdded:Connect(function(char)
+    task.spawn(ApplyGodModeHook, char)
     task.wait(0.3)
     if not Player.PlayerGui:FindFirstChild("StatsGui") then SetupStats() end
     if Config.AutoReturnEnabled and Config.SavedPos then local hrp = char:WaitForChild("HumanoidRootPart", 10) if hrp then task.wait(0.2); hrp.CFrame = Config.SavedPos end end
