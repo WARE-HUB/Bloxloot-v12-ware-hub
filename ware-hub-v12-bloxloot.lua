@@ -27,13 +27,17 @@ local L = {
         FlyFarmSec = "— Fly AutoFarm —", FlyFarmTog = "Enable Fly AutoFarm", FlySpd = "Fly Speed", SphereRad = "Sphere Loot Radius",
         MobSec = "— Target Settings —", MobSel = "Select Mobs", MobUpd = "Refresh Mob List",
         PathSec = "— Path Farming —", PathTog = "Enable Path Farm", RecStr = "Start Recording Route", RecStp = "Stop Recording", AgroRad = "Agro Radius",
+        RouteInput = "Route Name to Save", RouteSelect = "Select Route", RouteSave = "Save Recorded Route", RouteLoad = "Load Selected Route", RouteDel = "Delete Selected Route",
+        RecStartNotif = "Started recording a new route", RecStopNotif = "Route recording stopped",
+        ErrNoName = "Enter route name!", ErrNameTaken = "Name already taken!", ErrTooShort = "Route too short!",
+        SuccessSave = "Route [%s] saved!", SuccessLoad = "Route loaded and drawn", SuccessDel = "Route erased",
         LootSec = "— Loot Collection —", AutoLoot = "Auto-Pickup Items", LootAll = "Collect EVERYTHING",
         FiltGear = "— Filter: Gear —", GearSel = "Gear to Collect",
         FiltWep = "— Filter: Weapons —", WepSel = "Weapons to Collect",
         FiltOth = "— Filter: Others —", OthSel = "Other Items",
         W1 = "World 1 Locations", W2 = "World 2 Locations", TPBtn = "TELEPORT",
         EspSec = "— Object Highlight (ESP) —", EspPlr = "Show Players", EspMob = "Show Mobs", EspItm = "Show Items", EspDist = "Display Distance",
-        GodModeSec = "— Survival —", GodMode = "God Mode (Invincibility)"
+        GodModeSec = "— Survival —", GodMode = "God Mode (Invincibility)", HudSec = "— HUD Settings —"
     },
     RU = {
         Main = "Главная", Atk = "Атака", Farm = "Автофарм", Worlds = "Миры", Vis = "Визуалы", Misc = "Прочее",
@@ -46,13 +50,17 @@ local L = {
         FlyFarmSec = "— Флай-автофарм (Полет) —", FlyFarmTog = "Включить флай-автофарм", FlySpd = "Скорость полета", SphereRad = "Радиус сбора лута сферой",
         MobSec = "— Настройка целей —", MobSel = "Выбор мобов", MobUpd = "Обновить список мобов на карте",
         PathSec = "— Фарм по путям (Path Farm) —", PathTog = "Включить Path Farm", RecStr = "Начать запись маршрута", RecStp = "Остановить запись", AgroRad = "Радиус агра",
+        RouteInput = "Имя для сохранения маршрута", RouteSelect = "Выбор маршрута", RouteSave = "Сохранить записанный маршрут", RouteLoad = "Загрузить выбранный маршрут", RouteDel = "Удалить выбранный маршрут",
+        RecStartNotif = "Начата запись нового маршрута", RecStopNotif = "Запись маршрута остановлена",
+        ErrNoName = "Введите имя маршрута!", ErrNameTaken = "Имя уже занято!", ErrTooShort = "Маршрут слишком короткий!",
+        SuccessSave = "Маршрут [%s] сохранен!", SuccessLoad = "Маршрут загружен и отрисован", SuccessDel = "Маршрут стерт",
         LootSec = "— Настройки сбора лута —", AutoLoot = "Авто-подбор предметов", LootAll = "Собирать абсолютно все",
         FiltGear = "— Фильтр: Снаряжение —", GearSel = "Снаряжение для сбора",
         FiltWep = "— Фильтр: Оружие —", WepSel = "Оружие для сбора",
         FiltOth = "— Фильтр: Остальное —", OthSel = "Прочие предметы",
         W1 = "1 МИР — Локации", W2 = "2 МИР — Локации", TPBtn = "ТЕЛЕПОРТИРОВАТЬСЯ",
         EspSec = "— Подсветка объектов (ESP) —", EspPlr = "Показывать игроков", EspMob = "Показывать мобов", EspItm = "Показывать предметы", EspDist = "Дистанция отображения",
-        GodModeSec = "— Выживание —", GodMode = "God Mode (Бессмертие)"
+        GodModeSec = "— Выживание —", GodMode = "God Mode (Бессмертие)", HudSec = "— Настройки HUD —"
     }
 }
 
@@ -62,11 +70,49 @@ local Config = {
     AutoAttack = false, FastAttackEnabled = false, GodMode = false,
     AutoFarm = false, FlyFarm = false, FarmSpeed = 28, HeightOffset = 1.5, DistanceOffset = 3.5, 
     BallSize = 40, WalkRadius = 1250, PostKillWait = 0.3, SelectedMobs = {}, 
-    PathFarming = false, Recording = false, CurrentRadius = 20, CurrentIdx = 1, IsJumpingNow = false, Waypoints = {}, Visuals = {},
+    PathFarming = false, Recording = false, CurrentRadius = 20, CurrentIdx = 1, Waypoints = {}, Visuals = {},
+    SavedRoutes = {}, SelectedRouteName = nil, RouteInputName = "",
     CollectEnabled = false, LootRadius = 25,
     LootFilter = { CollectAll = false, Helmet = true, Chestplate = true, Leggings = true, Boots = true, Shield = true, Weapon = true, Diamonds = true, RunePuzzles = true, Potions = true, RebirthItems = true },
     SelectedCoords = nil, EspPlayers = false, EspMobs = false, EspItems = false, EspMaxDistance = 150
 }
+
+-- [ БАЗА ДАННЫХ ДЛЯ СОХРАНЕНИЯ МАРШРУТОВ ИЗ JSON ]
+local function SaveRoutesToFile()
+    pcall(function()
+        if writefile then
+            local dataToSave = {}
+            for routeName, wps in pairs(Config.SavedRoutes) do
+                dataToSave[routeName] = {}
+                for _, wp in ipairs(wps) do
+                    table.insert(dataToSave[routeName], {wp.Pos.X, wp.Pos.Y, wp.Pos.Z})
+                end
+            end
+            writefile("WareHub_Routes.txt", HttpService:JSONEncode(dataToSave))
+        end
+    end)
+end
+
+local function LoadRoutesFromFile()
+    pcall(function()
+        if isfile and readfile and isfile("WareHub_Routes.txt") then
+            local raw = readfile("WareHub_Routes.txt")
+            local decoded = HttpService:JSONDecode(raw)
+            if decoded then
+                Config.SavedRoutes = {}
+                for routeName, wps in pairs(decoded) do
+                    Config.SavedRoutes[routeName] = {}
+                    for _, coords in ipairs(wps) do
+                        table.insert(Config.SavedRoutes[routeName], {Pos = Vector3.new(coords[1], coords[2], coords[3])})
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Предварительный запуск загрузки маршрутов
+LoadRoutesFromFile()
 
 -- [ БАЗА ДАННЫХ ПРЕДМЕТОВ ]
 local LootDatabase = {
@@ -160,7 +206,6 @@ local function MoveTowards(currentCFrame, targetPosition, speed, deltaTime)
     return CFrame.new(currentPosition + (direction.Unit * math.min(speed * deltaTime, distance)))
 end
 
--- [ ФУНКЦИЯ ОПТИМИЗИРОВАННОГО БЕССМЕРТИЯ ]
 local function ApplyGodModeHook(char)
     if not char then return end
     local hum = char:WaitForChild("Humanoid", 10)
@@ -181,7 +226,7 @@ local function ApplyGodModeHook(char)
     end)
 end
 
--- [ ВИЗУАЛЫ ]
+-- [ ВИЗУАЛИЗАЦИЯ АГРА ]
 local AgroBox = Instance.new("Part")
 AgroBox.Name = "AgroVisualBox"; AgroBox.Shape = Enum.PartType.Block; AgroBox.Material = Enum.Material.ForceField; AgroBox.Color = Color3.fromRGB(255, 0, 0); AgroBox.Transparency = 0.75; AgroBox.CanCollide = false; AgroBox.Anchored = true; AgroBox.Parent = nil 
 RunService.Heartbeat:Connect(function()
@@ -265,14 +310,14 @@ local function IsEnemy(model)
 end
 
 -- [[ ИНТЕРФЕЙС RAYFIELD ]]
-local Window = Rayfield:CreateWindow({Name = "bloxloot v12 Ware hub update 3", LoadingTitle = "Loading...", ConfigurationSaving = {Enabled = false}})
+local Window = Rayfield:CreateWindow({Name = "bloxloot v12 Ware hub update 5", LoadingTitle = "Loading...", ConfigurationSaving = {Enabled = false}})
 
 -- Вкладка: Главная
 local Tab1 = Window:CreateTab(L[Language].Main)
 
 Tab1:CreateSection(L[Language].LangSec)
 Tab1:CreateDropdown({
-    Name = L[Language].LangSel, Options = {"EN 🇺🇸", "RU 🇷🇺"}, CurrentOption = {"EN 🇺🇸"}, MultipleOptions = false,
+    Name = L[Language].LangSel, Options = {"EN 🇺🇸", "RU 🇷🇺"}, CurrentOption = (Language == "RU" and {"RU 🇷🇺"} or {"EN 🇺🇸"}), MultipleOptions = false,
     Callback = function(Option)
         local choice = type(Option) == "table" and Option[1] or Option
         local code = choice:sub(1,2)
@@ -325,11 +370,96 @@ TabFarm:CreateButton({Name = L[Language].MobUpd, Callback = function()
     MobDropdown:Refresh(newList, true)
 end})
 
+-- МЕНЕДЖЕР МАРШРУТОВ
 TabFarm:CreateSection(L[Language].PathSec)
 TabFarm:CreateToggle({Name = L[Language].PathTog, CurrentValue = false, Callback = function(v) PlayClick(); Config.PathFarming = v; if v then Config.CurrentIdx = 1 end end})
-TabFarm:CreateButton({Name = L[Language].RecStr, Callback = function() PlayClick(); Config.Recording = true; Config.Waypoints = {}; for _,v in pairs(Config.Visuals) do if v then v:Destroy() end end; Config.Visuals = {}; Config.CurrentIdx = 1 end})
-TabFarm:CreateButton({Name = L[Language].RecStp, Callback = function() PlayClick(); Config.Recording = false end})
 TabFarm:CreateSlider({Name = L[Language].AgroRad, Range = {5, 30}, Increment = 1, CurrentValue = 20, Callback = function(v) Config.CurrentRadius = v; AgroBox.Size = Vector3.new(v*2, 14, v*2) end})
+
+TabFarm:CreateButton({Name = L[Language].RecStr, Callback = function() 
+    PlayClick(); Config.Recording = true; Config.Waypoints = {}
+    for _,v in pairs(Config.Visuals) do if v then v:Destroy() end end
+    Config.Visuals = {}; Config.CurrentIdx = 1 
+    Rayfield:Notify({Title = "Route", Content = L[Language].RecStartNotif, Duration = 2})
+end})
+TabFarm:CreateButton({Name = L[Language].RecStp, Callback = function() 
+    PlayClick(); Config.Recording = false 
+    Rayfield:Notify({Title = "Route", Content = L[Language].RecStopNotif, Duration = 2})
+end})
+
+TabFarm:CreateInput({
+    Name = L[Language].RouteInput,
+    PlaceholderText = "Route 1",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text) Config.RouteInputName = Text end
+})
+
+local initialRoutes = {}
+for k, _ in pairs(Config.SavedRoutes) do table.insert(initialRoutes, k) end
+if #initialRoutes == 0 then table.insert(initialRoutes, "...") end
+
+local RouteSelectDrop = TabFarm:CreateDropdown({
+    Name = L[Language].RouteSelect,
+    Options = initialRoutes,
+    CurrentOption = {initialRoutes[1]},
+    MultipleOptions = false,
+    Callback = function(Opt) Config.SelectedRouteName = type(Opt) == "table" and Opt[1] or Opt end
+})
+
+TabFarm:CreateButton({
+    Name = L[Language].RouteSave,
+    Callback = function()
+        local rName = Config.RouteInputName
+        if rName == "" then Rayfield:Notify({Title = "Error", Content = L[Language].ErrNoName, Duration = 2}) return end
+        if Config.SavedRoutes[rName] then Rayfield:Notify({Title = "Error", Content = L[Language].ErrNameTaken, Duration = 2}) return end
+        if #Config.Waypoints < 2 then Rayfield:Notify({Title = "Error", Content = L[Language].ErrTooShort, Duration = 2}) return end
+        
+        Config.SavedRoutes[rName] = table.clone(Config.Waypoints)
+        SaveRoutesToFile()
+        
+        local opts = {} for k,_ in pairs(Config.SavedRoutes) do table.insert(opts, k) end
+        RouteSelectDrop:Refresh(opts, true)
+        Rayfield:Notify({Title = "Success", Content = string.format(L[Language].SuccessSave, rName), Duration = 2})
+    end
+})
+
+TabFarm:CreateButton({
+    Name = L[Language].RouteLoad,
+    Callback = function()
+        if Config.SelectedRouteName and Config.SavedRoutes[Config.SelectedRouteName] then
+            for _,v in pairs(Config.Visuals) do if v then v:Destroy() end end
+            Config.Visuals = {}
+            Config.Waypoints = table.clone(Config.SavedRoutes[Config.SelectedRouteName])
+            Config.CurrentIdx = 1
+            
+            for _, w in ipairs(Config.Waypoints) do
+                local p = Instance.new("Part", workspace)
+                p.Anchored = true; p.CanCollide = false; p.Position = w.Pos
+                p.Size = Vector3.new(0.6, 0.6, 0.6); p.Color = Color3.fromRGB(0, 255, 150)
+                table.insert(Config.Visuals, p)
+            end
+            Rayfield:Notify({Title = "Success", Content = L[Language].SuccessLoad, Duration = 2})
+        end
+    end
+})
+
+TabFarm:CreateButton({
+    Name = L[Language].RouteDel,
+    Callback = function()
+        if Config.SelectedRouteName and Config.SavedRoutes[Config.SelectedRouteName] then
+            Config.Waypoints = {}
+            for _,v in pairs(Config.Visuals) do if v then v:Destroy() end end
+            Config.Visuals = {}
+            Config.SavedRoutes[Config.SelectedRouteName] = nil
+            SaveRoutesToFile()
+            
+            local opts = {} for k,_ in pairs(Config.SavedRoutes) do table.insert(opts, k) end
+            if #opts == 0 then table.insert(opts, "...") end
+            RouteSelectDrop:Refresh(opts, true)
+            Config.SelectedRouteName = nil
+            Rayfield:Notify({Title = "Removed", Content = L[Language].SuccessDel, Duration = 2})
+        end
+    end
+})
 
 TabFarm:CreateSection(L[Language].LootSec)
 TabFarm:CreateToggle({Name = L[Language].AutoLoot, CurrentValue = false, Callback = function(v) PlayClick(); Config.CollectEnabled = v end})
@@ -378,22 +508,19 @@ TabVisuals:CreateSlider({Name = L[Language].EspDist, Range = {50, 1000}, Increme
 
 -- Вкладка: Прочее (Misc)
 local TabMisc = Window:CreateTab(L[Language].Misc)
-
 TabMisc:CreateSection(L[Language].ServSec)
 TabMisc:CreateButton({Name = L[Language].Hop, Callback = HopToEmptyServer})
-
 TabMisc:CreateSection(L[Language].PosSec)
 TabMisc:CreateButton({Name = L[Language].PosBtn, Callback = function()
     PlayClick(); local hrp = Player.Character:FindFirstChild("HumanoidRootPart")
     if hrp then Config.SavedPos = hrp.CFrame; Rayfield:Notify({Title = "Saved", Content = "Point Saved!", Duration = 2}) end
 end})
 TabMisc:CreateToggle({Name = L[Language].AutoRet, CurrentValue = false, Callback = function(v) PlayClick(); Config.AutoReturnEnabled = v end})
-
-TabMisc:CreateSection("— HUD Settings —")
+TabMisc:CreateSection(L[Language].HudSec)
 TabMisc:CreateToggle({Name = L[Language].Stats, CurrentValue = false, Callback = function(v) PlayClick(); Config.ShowStats = v end})
 
 
--- [[ ФАСТ-АТАКА (РУЧНАЯ ПО ТАПУ) ]]
+-- [[ ФАСТ-АТАКА ]]
 UserInputService.InputBegan:Connect(function(input, gpe)
     if gpe then return end
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -411,11 +538,10 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     end
 end)
 
--- [[ СИСТЕМЫ АВТОМАТИЗАЦИИ (С ГЛОБАЛЬНЫМ КЭШЕМ ДЛЯ ОПТИМИЗАЦИИ) ]]
+-- [[ ГЛОБАЛЬНЫЙ СКАННЕР ОБЪЕКТОВ ]]
 local SharedLoot = {}
 local SharedMobs = {}
 
--- 1. Глобальный Сканнер объектов (обновляет списки раз в 0.15с, спасает от лагов)
 task.spawn(function()
     while true do
         local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
@@ -461,7 +587,7 @@ task.spawn(function()
     end
 end)
 
--- 2. Классический ТП-Автофарм
+-- [[ КЛАССИЧЕСКИЙ ТП-АВТОФАРМ ]]
 task.spawn(function()
     while true do
         local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
@@ -482,7 +608,7 @@ task.spawn(function()
     end
 end)
 
--- 3. ФЛАЙ-АВТОФАРМ 
+-- [[ ФЛАЙ-АВТОФАРМ ]]
 local waveTime = 0
 RunService.Heartbeat:Connect(function(dt)
     local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
@@ -504,7 +630,7 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- 4. Сборщик лута на полу (Без автофарма)
+-- [[ СБОРИЩИК ЛУТА НА ПОЛУ ]]
 task.spawn(function()
     while true do
         local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
@@ -523,32 +649,40 @@ task.spawn(function()
     end
 end)
 
--- 5. Движение по путям (Path Farming)
+-- [[ ЧИСТЫЙ РУЧНОЙ ПАРТФАРМ (PATH FARMING) - БЕЗ СЛУЧАЙНЫХ ПРЫЖКОВ ]]
 task.spawn(function()
-    local lastPos, stuckTimer = Vector3.new(0,0,0), 0
     while true do
         local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
         local hum = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+        
         if Config.PathFarming and not Config.AutoFarm and not Config.FlyFarm and hrp and hum and #Config.Waypoints > 0 then
             local target, dist = nil, math.huge
+            
+            -- Прямой поиск мобов в радиусе агра
             for _, mob in pairs(SharedMobs) do
                 local tHrp = mob:FindFirstChild("HumanoidRootPart")
                 if tHrp then
                     local diff = tHrp.Position - hrp.Position
                     if math.abs(diff.X) <= Config.CurrentRadius and math.abs(diff.Z) <= Config.CurrentRadius and diff.Magnitude < dist then 
-                        dist = diff.Magnitude; target = mob 
+                        dist = diff.Magnitude
+                        target = mob 
                     end
                 end
             end
-            if target then hum:MoveTo(target.HumanoidRootPart.Position) else
+            
+            if target and target:FindFirstChild("HumanoidRootPart") then
+                -- Бежим напрямую к мобу БЕЗ прыжков
+                hum:MoveTo(target.HumanoidRootPart.Position)
+            else
+                -- Идём строго по точкам маршрута
                 local w = Config.Waypoints[Config.CurrentIdx]
                 if w then
-                    stuckTimer = (hrp.Position - lastPos).Magnitude < 0.2 and stuckTimer + 0.1 or 0
-                    lastPos = hrp.Position
-                    if (w.Jumped or stuckTimer > 0.6) and not Config.IsJumpingNow then hum:ChangeState(Enum.HumanoidStateType.Jumping); Config.IsJumpingNow = true end
-                    if hum:GetState() == Enum.HumanoidStateType.Landed then Config.IsJumpingNow = false end
                     hum:MoveTo(w.Pos)
-                    if (Vector2.new(hrp.Position.X, hrp.Position.Z) - Vector2.new(w.Pos.X, w.Pos.Z)).Magnitude < 4.5 then Config.CurrentIdx = (Config.CurrentIdx < #Config.Waypoints) and Config.CurrentIdx + 1 or 1 end
+                    
+                    -- Переключение на следующую точку пути
+                    if (Vector2.new(hrp.Position.X, hrp.Position.Z) - Vector2.new(w.Pos.X, w.Pos.Z)).Magnitude < 4.5 then 
+                        Config.CurrentIdx = (Config.CurrentIdx < #Config.Waypoints) and Config.CurrentIdx + 1 or 1 
+                    end
                 end
             end
         end
@@ -556,19 +690,19 @@ task.spawn(function()
     end
 end)
 
--- 6. Запись маршрутов
+-- [[ ЗАПИСЬ МАРШРУТОВ ]]
 task.spawn(function()
     while true do
         local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
         if Config.Recording and hrp and (#Config.Waypoints == 0 or (hrp.Position - Config.Waypoints[#Config.Waypoints].Pos).Magnitude > 3.2) then
-            table.insert(Config.Waypoints, {Pos = hrp.Position, Jumped = Player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Jumping})
+            table.insert(Config.Waypoints, {Pos = hrp.Position})
             local p = Instance.new("Part", workspace); p.Anchored = true; p.CanCollide = false; p.Position = hrp.Position; p.Size = Vector3.new(0.6,0.6,0.6); p.Color = Color3.fromRGB(0, 255, 150); table.insert(Config.Visuals, p)
         end
         task.wait(0.12)
     end
 end)
 
--- 7. УСИЛЕННАЯ АВТО-АТАКА
+-- [[ УСИЛЕННАЯ АВТО-АТАКА ]]
 task.spawn(function()
     while true do
         if Config.AutoAttack then
@@ -586,12 +720,10 @@ task.spawn(function()
     end
 end)
 
--- 8. Игровые бинды + Защита CanTouch для God Mode
+-- [[ БИНДЫ И ЗАЩИТА ]]
 RunService.Stepped:Connect(function() 
     if Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then 
         Player.Character.Humanoid.WalkSpeed = Config.WalkSpeed 
-        
-        -- Постоянно отрубаем тач при включенном God Mode
         if Config.GodMode then
             for _, part in pairs(Player.Character:GetDescendants()) do
                 if part:IsA("BasePart") then part.CanTouch = false end
@@ -612,7 +744,24 @@ Player.CharacterAdded:Connect(function(char)
     if Config.FlyFarm then CreateVisualBall(char) end
 end)
 
--- 9. Поток ESP
+
+-- [[ ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ОБНОВЛЕННОГО ESP ]]
+local function FormatHP(val)
+    if val >= 1000000 then
+        return string.format("%.1fM", val / 1000000):gsub("%.0", "")
+    elseif val >= 1000 then
+        return string.format("%.1fk", val / 1000):gsub("%.0", "")
+    end
+    return tostring(math.floor(val))
+end
+
+local function GetHealthColor(percent)
+    local clamped = math.clamp(percent, 0, 1)
+    return Color3.fromHSV((clamped * 120) / 360, 1, 1) -- Полноценный градиент: Зеленый -> Желтый -> Красный
+end
+
+
+-- [[ ПОТОК ESP ]]
 task.spawn(function()
     while true do
         if Config.EspPlayers or Config.EspMobs or Config.EspItems then
@@ -621,12 +770,36 @@ task.spawn(function()
                 if v:IsA("Model") and v:FindFirstChildOfClass("Humanoid") and v ~= Player.Character then
                     local t = v:FindFirstChild("HumanoidRootPart") or v.PrimaryPart
                     local p = game.Players:GetPlayerFromCharacter(v)
+                    
                     if t and mHrp and (mHrp.Position - t.Position).Magnitude <= Config.EspMaxDistance then
                         if (p and Config.EspPlayers) or (not p and Config.EspMobs) then
-                            local tag = CreateTag(t, "CleanTag")
-                            tag.Text = ((v.Humanoid.DisplayName ~= "" and v.Humanoid.DisplayName) or v.Name).." | HP: "..math.floor(v.Humanoid.Health)
-                            CreateHighlight(v).FillColor = p and Color3.fromRGB(0, 255, 255) or Color3.fromRGB(255, 0, 0)
+                            local hum = v:FindFirstChildOfClass("Humanoid")
+                            if hum and hum.Health > 0 then
+                                local currentHp = hum.Health
+                                local maxHp = hum.MaxHealth
+                                local percent = maxHp > 0 and (currentHp / maxHp) or 0
+                                
+                                -- Цветовка под текущие % здоровья
+                                local hpColor = GetHealthColor(percent)
+                                local tag = CreateTag(t, "CleanTag", hpColor)
+                                
+                                local nameStr = (hum.DisplayName ~= "" and hum.DisplayName) or v.Name
+                                -- Вывод в формате: Имя | [10k/12k]
+                                tag.Text = string.format("%s | [%s/%s]", nameStr, FormatHP(currentHp), FormatHP(maxHp))
+                                tag.TextColor3 = hpColor
+                                
+                                CreateHighlight(v).FillColor = p and Color3.fromRGB(0, 255, 255) or Color3.fromRGB(255, 0, 0)
+                            else
+                                if t:FindFirstChild("CleanTag") then t.CleanTag:Destroy() end
+                                if v:FindFirstChild("EspHighlight") then v.EspHighlight:Destroy() end
+                            end
+                        else
+                            if t:FindFirstChild("CleanTag") then t.CleanTag:Destroy() end
+                            if v:FindFirstChild("EspHighlight") then v.EspHighlight:Destroy() end
                         end
+                    else
+                        if t and t:FindFirstChild("CleanTag") then t.CleanTag:Destroy() end
+                        if v:FindFirstChild("EspHighlight") then v.EspHighlight:Destroy() end
                     end
                 elseif Config.EspItems and v:IsA("ProximityPrompt") then
                     local t = v.Parent:IsA("BasePart") and v.Parent or v.Parent:FindFirstChildOfClass("BasePart")
@@ -634,10 +807,12 @@ task.spawn(function()
                         local rn, cat = GetCleanItemName(v)
                         local tag = CreateTag(t, "ItemTag", cat and CategoryLabels[cat] and Color3.fromRGB(0, 255, 130) or Color3.fromRGB(255, 60, 60))
                         tag.Text = (cat and CategoryLabels[cat] and "["..CategoryLabels[cat].."] " or "[ПРЕДМЕТ] ") .. tostring(rn)
+                    else
+                        if t and t:FindFirstChild("ItemTag") then t.ItemTag:Destroy() end
                     end
                 end
             end
         end
-        task.wait(1.0)
+        task.wait(0.5) -- Опрос раз в полсекунды: моментально ловит изменения MaxHealth и экономит фпс
     end
 end)
