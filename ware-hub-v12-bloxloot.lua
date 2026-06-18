@@ -32,7 +32,6 @@ local L = {
         ErrNoName = "Enter route name!", ErrNameTaken = "Name already taken!", ErrTooShort = "Route too short!",
         SuccessSave = "Route [%s] saved!", SuccessLoad = "Route loaded and drawn", SuccessDel = "Route erased",
         
-        -- Вкладка автоподбора (EN)
         LootModeSec = "— LOOT COLLECTION MODES —",
         LootFilterTog = "Automatic item pickup (Strict Filter)",
         LootAllTog = "Automatic pickup of ALL items",
@@ -61,7 +60,6 @@ local L = {
         ErrNoName = "Введите имя маршрута!", ErrNameTaken = "Имя уже занято!", ErrTooShort = "Маршрут слишком короткий!",
         SuccessSave = "Маршрут [%s] сохранен!", SuccessLoad = "Маршрут загружен и отрисован", SuccessDel = "Маршрут стерт",
         
-        -- Вкладка автоподбора (RU)
         LootModeSec = "— РЕЖИМЫ СБОРА ЛУТА —",
         LootFilterTog = "Автоматический подбор (Строгий Фильтр)",
         LootAllTog = "Автоматический подбор ВСЕХ предметов",
@@ -86,7 +84,6 @@ local Config = {
     PathFarming = false, Recording = false, CurrentRadius = 20, CurrentIdx = 1, Waypoints = {}, Visuals = {},
     SavedRoutes = {}, SelectedRouteName = nil, RouteInputName = "",
     
-    -- Продвинутая система лута
     AutoLoot = false,
     LootAll = false,
     SelectedItems = { Helmet = {}, Chestplate = {}, Leggings = {}, Boots = {}, Shield = {}, Weapon = {}, Diamonds = {}, Potions = {}, RunePuzzles = {}, RebirthItems = {} },
@@ -94,14 +91,13 @@ local Config = {
     SelectedCoords = nil, EspPlayers = false, EspMobs = false, EspItems = false, EspMaxDistance = 150
 }
 
--- Игнор-лист для ProximityPrompt
 local ProximityBlacklist = {
     ["teleport"] = true, ["talk"] = true, ["open"] = true, ["take"] = true, ["buy"] = true, 
     ["craft"] = true, ["upgrade"] = true, ["quest"] = true, ["use"] = true, ["interact"] = true,
-    ["portal"] = true, ["телепорт"] = true, ["портал"] = true
+    ["portal"] = true, ["телепорт"] = true, ["портал"] = true, ["repair"] = true, ["починить"] = true,
+    ["ремонт"] = true
 }
 
--- БАЗА ДАННЫХ ИЗ МОДУЛЕЙ ИГРЫ
 local RawGameDatabase = {}
 local DropdownOptions = { Helmet = {}, Chestplate = {}, Leggings = {}, Boots = {}, Shield = {}, Weapon = {}, Diamonds = {}, Potions = {}, RunePuzzles = {}, RebirthItems = {} }
 local DisplayNameToTechnicalId = {}
@@ -166,7 +162,6 @@ local function ParseGameModules()
                             
                             local category = nil
                             
-                            -- Строжайшая изоляция рун и фрагментов в первую очередь!
                             if lowerId:find("runefragment", 1, true) or lowerId:find("fragment", 1, true) or lowerId:find("rune", 1, true) or lowerId:find("bossrune", 1, true) or string.upper(idStr):find("RUNE") or parentName:find("RUNE") then
                                 category = "RunePuzzles"
                             elseif #digitParts == 4 and digitParts[3] ~= 100 and digitParts[3] ~= 101 then
@@ -198,24 +193,19 @@ local function ParseGameModules()
                             
                             if category then
                                 local cleanName = realName:gsub("Рецепт на ", ""):gsub("Рецепт ", ""):gsub("[Rr]ecipe", ""):gsub("_", " ")
-                                
                                 local isBossItem = (digitParts[3] == 100 or digitParts[3] == 101 or lowerId:find("queen", 1, true) or lowerId:find("king", 1, true) or lowerId:find("boss", 1, true))
                                 
                                 if isBossItem then
                                     local isException = lowerId:find("skeletonking_shield", 1, true) or lowerId:find("skeletonking_chestplate", 1, true) or lowerId:find("skeletonking_leggings", 1, true) or cleanName:find("Щит Короля Скелетов") or cleanName:find("Нагрудник Короля Скелетов") or cleanName:find("Штаны Короля Скелетов")
-                                    
                                     if not isException and category ~= "RunePuzzles" then
                                         local prefix = (Language == "RU") and "[Крафт] " or "[Craft] "
-                                        if not cleanName:find("%[") then
-                                            cleanName = prefix .. cleanName
-                                        end
+                                        if not cleanName:find("%[") then cleanName = prefix .. cleanName end
                                     end
                                 end
 
                                 table.insert(RawGameDatabase, {
                                     Id = idStr, CleanIdLower = lowerId, RealName = realName, CleanName = cleanName, Category = category,
-                                    IsBoss = isBossItem,
-                                    Digits = digitParts
+                                    IsBoss = isBossItem, Digits = digitParts
                                 })
                             end
                         end)
@@ -226,7 +216,6 @@ local function ParseGameModules()
     end
 end
 
--- [ СТРУКТУРНАЯ СОРТИРОВКА ]
 local function SortByItemStructure(tbl)
     table.sort(tbl, function(a, b)
         local firstPartA = a:match("^([^|]+)") or ""
@@ -243,7 +232,6 @@ local function SortByItemStructure(tbl)
     end)
 end
 
--- [ ОБНОВЛЕНИЕ СПИСКОВ ДЛЯ МЕНЮ ЛУТА ]
 local function UpdateMenuForWorld(worldNum)
     for cat, _ in pairs(DropdownOptions) do DropdownOptions[cat] = {} end
     table.clear(DisplayNameToTechnicalId)
@@ -296,7 +284,6 @@ local function UpdateMenuForWorld(worldNum)
     end
 end
 
--- Инициализируем базу данных перед билдом меню
 pcall(ParseGameModules)
 UpdateMenuForWorld(1)
 
@@ -310,7 +297,6 @@ local function RecalculateSelectedCache()
     end
 end
 
--- [ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ И СВЯЗКИ ]
 local function PlayClick()
     local sound = Instance.new("Sound", game:GetService("SoundService"))
     sound.SoundId = "rbxassetid://6895079853"; sound.Volume = 0.5; sound:Play()
@@ -326,10 +312,8 @@ local function TriggerPrompt(prompt)
     end
 end
 
--- [ СТРОГАЯ И ИСПРАВЛЕННАЯ СВЕРКА ЛУТА ]
 local function CheckLootFilterMatch(prompt)
     if not prompt.Enabled then return false end
-    
     local actionText = string.lower(prompt.ActionText or "")
     local objectText = string.lower(prompt.ObjectText or "")
     if ProximityBlacklist[actionText] or ProximityBlacklist[objectText] then return false end
@@ -340,11 +324,8 @@ local function CheckLootFilterMatch(prompt)
     for i = 1, 4 do
         if not current or current == workspace then break end
         local objNameLower = string.lower(current.Name)
-        
-        -- Полное совпадение по хэш-таблице выбранного пользователем ID
         if activeSelectedIds[objNameLower] then return true end
         
-        -- Поиск точных разделителей, чтобы избежать ложных срабатываний (руны не пройдут)
         for targetId, _ in pairs(activeSelectedIds) do
             if objNameLower == targetId or objNameLower:find("_" .. targetId .. "$") or objNameLower:find("^" .. targetId .. "_") or objNameLower:find("_" .. targetId .. "_") then
                 return true
@@ -362,7 +343,6 @@ local function CheckLootFilterMatch(prompt)
     return false
 end
 
--- Для ESP тегов
 local function GetCleanItemName(prompt)
     local current = prompt.Parent
     for i = 1, 3 do
@@ -531,7 +511,8 @@ task.spawn(function()
             activeLootObject = closestLoot
 
             if not activeLootObject then
-                local minMobDist, closestMob = Config.WalkRadius, nil
+                local allowedRadius = Config.PathFarming and Config.CurrentRadius or Config.WalkRadius
+                local minMobDist, closestMob = allowedRadius, nil
                 for _, mob in pairs(SharedMobs) do
                     if mob:FindFirstChild("HumanoidRootPart") then
                         local dist = (hrp.Position - mob.HumanoidRootPart.Position).Magnitude
@@ -547,11 +528,9 @@ task.spawn(function()
     end
 end)
 
-
 -- [[ СТРОИТЕЛЬ ИНТЕРФЕЙСА RAYFIELD ]]
 local Window = Rayfield:CreateWindow({Name = "BloxLoot WareHub v12 [Update 6]", LoadingTitle = "Loading Ultimate Script...", ConfigurationSaving = {Enabled = false}})
 
--- Вкладка: Главная
 local Tab1 = Window:CreateTab(L[Language].Main)
 Tab1:CreateSection(L[Language].LangSec)
 Tab1:CreateDropdown({
@@ -572,13 +551,11 @@ Tab1:CreateSection(L[Language].PlrSec)
 Tab1:CreateSlider({Name = L[Language].Walk, Range = {16, 40}, Increment = 1, CurrentValue = 16, Callback = function(v) Config.WalkSpeed = v end})
 Tab1:CreateToggle({Name = L[Language].InfJ, CurrentValue = false, Callback = function(v) PlayClick(); Config.InfiniteJump = v end})
 
--- Вкладка: Атака
 local TabAtk = Window:CreateTab(L[Language].Atk)
 TabAtk:CreateSection(L[Language].AtkSec)
 TabAtk:CreateToggle({Name = L[Language].FastAtk, CurrentValue = false, Callback = function(v) Config.FastAttackEnabled = v end})
 TabAtk:CreateToggle({Name = L[Language].AutoAtk, CurrentValue = false, Callback = function(v) PlayClick(); Config.AutoAttack = v end})
 
--- Вкладка: Автофарм
 local TabFarm = Window:CreateTab(L[Language].Farm)
 TabFarm:CreateSection(L[Language].FlyFarmSec)
 TabFarm:CreateToggle({Name = L[Language].FlyFarmTog, CurrentValue = false, Callback = function(v) Config.FlyFarm = v; if v then if Player.Character then CreateVisualBall(Player.Character) end else DestroyVisualBall() end end})
@@ -640,7 +617,6 @@ end})
 
 -- [ ВКЛАДКА: АВТОПОДБОР ПРЕДМЕТОВ ]
 local TabLoot = Window:CreateTab(L[Language].LootTab)
-
 TabLoot:CreateSection(L[Language].LootModeSec)
 TabLoot:CreateToggle({Name = L[Language].LootFilterTog, CurrentValue = false, Callback = function(v) Config.AutoLoot = v end})
 TabLoot:CreateToggle({Name = L[Language].LootAllTog, CurrentValue = false, Callback = function(v) Config.LootAll = v end})
@@ -649,10 +625,7 @@ local DropHelmets, DropChestplates, DropLeggings, DropBoots, DropShields, DropWe
 
 TabLoot:CreateSection(L[Language].FiltWorldSec)
 TabLoot:CreateDropdown({
-    Name = L[Language].WorldSelect, 
-    Options = L[Language].WorldsArray, 
-    CurrentOption = {L[Language].WorldsArray[1]}, 
-    MultipleOptions = false,
+    Name = L[Language].WorldSelect, Options = L[Language].WorldsArray, CurrentOption = {L[Language].WorldsArray[1]}, MultipleOptions = false,
     Callback = function(selectedTable)
         local choice = selectedTable[1]
         local worldNum = (choice:find("2") and 2) or (choice:find("3") and 3) or 1
@@ -685,8 +658,6 @@ DropRunes = TabLoot:CreateDropdown({Name = L[Language].RuneName, Options = Dropd
 DropDiamonds = TabLoot:CreateDropdown({Name = L[Language].DiamName, Options = DropdownOptions.Diamonds, CurrentOption = {}, MultipleOptions = true, Callback = function(s) Config.SelectedItems.Diamonds = s; RecalculateSelectedCache() end})
 DropRebirthItems = TabLoot:CreateDropdown({Name = L[Language].RebirthName, Options = DropdownOptions.RebirthItems, CurrentOption = {}, MultipleOptions = true, Callback = function(s) Config.SelectedItems.RebirthItems = s; RecalculateSelectedCache() end})
 
-
--- Вкладка: Миры
 local World1Points = { ["Boss 1"] = Vector3.new(-66, 41.7, -12.4), ["Boss 2"] = Vector3.new(-89.5, 52.2, -160.7), ["Boss 3"] = Vector3.new(-18.2, 81.5, -505.9), ["Boss 4"] = Vector3.new(-91.3, 141.7, -632.9), ["World 1 Boss Rune"] = Vector3.new(2.5, 58.8, -24.5) }
 local World2Points = { ["Boss 1"] = Vector3.new(75, 6, -112), ["Boss 2"] = Vector3.new(51, -13, -449), ["Boss 3"] = Vector3.new(78, 41.1, -835), ["Boss 4"] = Vector3.new(60, 4, -1012) }
 local TabWorlds = Window:CreateTab(L[Language].Worlds)
@@ -694,7 +665,6 @@ TabWorlds:CreateDropdown({Name = L[Language].W1, Options = {" ", "Boss 1", "Boss
 TabWorlds:CreateDropdown({Name = L[Language].W2, Options = {" ", "Boss 1", "Boss 2", "Boss 3", "Boss 4"}, CurrentOption = " ", Callback = function(O) local c = type(O)=="table" and O[1] or O; Config.SelectedCoords = (c~=" ") and World2Points[c] or nil end})
 TabWorlds:CreateButton({Name = L[Language].TPBtn, Callback = function() if Config.SelectedCoords then TeleportTo(Config.SelectedCoords) end end})
 
--- Вкладка: Визуалы
 local TabVisuals = Window:CreateTab(L[Language].Vis)
 TabVisuals:CreateSection(L[Language].EspSec)
 TabVisuals:CreateToggle({Name = L[Language].EspPlr, CurrentValue = false, Callback = function(v) PlayClick(); Config.EspPlayers = v if not v then FullClearESP() end end})
@@ -702,7 +672,6 @@ TabVisuals:CreateToggle({Name = L[Language].EspMob, CurrentValue = false, Callba
 TabVisuals:CreateToggle({Name = L[Language].EspItm, CurrentValue = false, Callback = function(v) Config.EspItems = v if not v then FullClearESP() end end})
 TabVisuals:CreateSlider({Name = L[Language].EspDist, Range = {50, 1000}, Increment = 10, CurrentValue = 150, Callback = function(v) Config.EspMaxDistance = v end})
 
--- Вкладка: Прочее (Misc)
 local TabMisc = Window:CreateTab(L[Language].Misc)
 TabMisc:CreateSection(L[Language].ServSec)
 TabMisc:CreateButton({Name = L[Language].Hop, Callback = HopToEmptyServer})
@@ -712,7 +681,6 @@ TabMisc:CreateToggle({Name = L[Language].AutoRet, CurrentValue = false, Callback
 TabMisc:CreateSection(L[Language].HudSec)
 TabMisc:CreateToggle({Name = L[Language].Stats, CurrentValue = false, Callback = function(v) PlayClick(); Config.ShowStats = v end})
 
-
 -- [[ ПОТОК ДЛЯ СБОРА НА ПОЛУ В РЕЖИМЕ СВОБОДНОГО БЕГА ]]
 task.spawn(function()
     while true do
@@ -720,16 +688,13 @@ task.spawn(function()
         if (Config.AutoLoot or Config.LootAll) and hrp and not Config.FlyFarm and not Config.PathFarming then
             for _, item in pairs(SharedLoot) do
                 if (hrp.Position - item.Part.Position).Magnitude <= 35 then
-                    if CheckLootFilterMatch(item.Prompt) then
-                        TriggerPrompt(item.Prompt)
-                    end
+                    if CheckLootFilterMatch(item.Prompt) then TriggerPrompt(item.Prompt) end
                 end
             end
         end
         task.wait(0.12)
     end
 end)
-
 
 -- [[ ИНТЕГРИРОВАННЫЙ ФЛАЙ-АВТОФАРМ ]]
 local waveTime = 0
@@ -744,7 +709,6 @@ RunService.Heartbeat:Connect(function(dt)
             local tp = activeLootObject.Part.Position + Vector3.new(0, ((math.cos(waveTime)-1)*2.0) + 1.2, 0)
             hrp.CFrame = MoveTowards(hrp.CFrame, tp, Config.FarmSpeed, dt)
             if (hrp.Position - tp).Magnitude <= 7 then TriggerPrompt(activeLootObject.Prompt) end
-            
         elseif activeMobObject and activeMobObject:FindFirstChild("HumanoidRootPart") then
             local tHrp = activeMobObject.HumanoidRootPart
             local fp = tHrp.Position + (tHrp.CFrame.LookVector * Config.DistanceOffset) + Vector3.new(0, Config.HeightOffset, 0)
@@ -755,8 +719,8 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
-
--- [[ ИНТЕГРИРОВАННЫЙ ПАТ-ФАРМИНГ ]]
+-- [[ ПАТ-ФАРМИНГ ]]
+local engagedWithMob = false
 task.spawn(function()
     while true do
         local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
@@ -769,8 +733,23 @@ task.spawn(function()
                     TriggerPrompt(activeLootObject.Prompt)
                 end
             elseif activeMobObject and activeMobObject:FindFirstChild("HumanoidRootPart") then
+                engagedWithMob = true
                 hum:MoveTo(activeMobObject.HumanoidRootPart.Position)
             else
+                if engagedWithMob then
+                    engagedWithMob = false
+                    local closestIdx = 1
+                    local minDistance = math.huge
+                    for idx, wp in ipairs(Config.Waypoints) do
+                        local dist = (hrp.Position - wp.Pos).Magnitude
+                        if dist < minDistance then
+                            minDistance = dist
+                            closestIdx = idx
+                        end
+                    end
+                    Config.CurrentIdx = closestIdx
+                end
+                
                 local w = Config.Waypoints[Config.CurrentIdx]
                 if w then
                     hum:MoveTo(w.Pos)
@@ -783,7 +762,6 @@ task.spawn(function()
         task.wait(0.03)
     end
 end)
-
 
 -- [[ ОСТАЛЬНЫЕ СИСТЕМЫ ]]
 UserInputService.InputBegan:Connect(function(input, gpe)
@@ -847,25 +825,29 @@ Player.CharacterAdded:Connect(function(char)
     if Config.FlyFarm then CreateVisualBall(char) end
 end)
 
--- [ СИСТЕМА ФОРМАТИРОВАНИЯ ХП ДЛЯ ОГРОМНЫХ ЧИСЕЛ С 3 ЗНАКАМИ ]
+-- [[ ЖЕЛЕЗОБЕТОННАЯ СИСТЕМА ФОРМАТИРОВАНИЯ ХП БЕЗ СКРЫТЫХ БАГОВ ]]
 local function FormatHP(val)
-    if not val or val < 1000 then return tostring(math.floor(val or 0)) end
+    if not val then return "0" end
+    if val < 1000 then return tostring(math.floor(val)) end
     
-    local suffixes = {"", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"}
-    local tier = math.min(math.floor(math.log10(val) / 3), #suffixes)
-    
-    if tier == 0 then return tostring(math.floor(val)) end
-    
-    local scaled = val / (1000 ^ tier)
-    local formatted = string.format("%.3f%s", scaled, suffixes[tier])
-    
-    -- Очищаем лишние нули в конце дроби, чтобы не было "100.000B"
-    formatted = formatted:gsub("%.000", "")
-    if formatted:find("%.") then
-        formatted = formatted:gsub("0+(%A)$", "%1"):gsub("%.(%A)$", "%1")
+    local formatted, suffix
+    if val >= 10^12 then
+        formatted = string.format("%.2f", val / 10^12) suffix = "T"
+    elseif val >= 10^9 then
+        formatted = string.format("%.2f", val / 10^9) suffix = "B"
+    elseif val >= 10^6 then
+        formatted = string.format("%.2f", val / 10^6) suffix = "M"
+    elseif val >= 10^3 then
+        formatted = string.format("%.2f", val / 10^3) suffix = "K"
     end
     
-    return formatted
+    formatted = formatted:gsub("%.00", "")
+    if formatted:find("%.") then
+        formatted = formatted:gsub("0+$", "")
+        formatted = formatted:gsub("%.$", "")
+    end
+    
+    return formatted .. suffix
 end
 
 local function GetHealthColor(percent) return Color3.fromHSV((math.clamp(percent, 0, 1) * 120) / 360, 1, 1) end
