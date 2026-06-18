@@ -34,10 +34,11 @@ local L = {
         
         -- Вкладка автоподбора (EN)
         LootModeSec = "— LOOT COLLECTION MODES —",
-        LootFilterTog = "Automatic item pickup",
-        LootAllTog = "Automatic pickup of all items",
+        LootFilterTog = "Automatic item pickup (Strict Filter)",
+        LootAllTog = "Automatic pickup of ALL items",
         FiltWorldSec = "— WORLD FILTER CONFIG —",
         WorldSelect = "Select Current World",
+        WorldsArray = {"World 1", "World 2", "World 3"},
         EquipSec = "— Equipment —", HelmName = "🎩 Helmets", ChestName = "🧥 Chestplates", LegName = "👖 Leggings", BootName = "🥾 Boots", ShieldName = "🛡️ Shields", WepName = "⚔️ Weapons & Tools",
         SpecSec = "— Special & Consumables —", PotName = "🧪 Potions", RuneName = "🌀 Runes & Boss Drops", DiamName = "💎 Diamonds", RebirthName = "🔁 Rebirth Items",
         
@@ -62,10 +63,11 @@ local L = {
         
         -- Вкладка автоподбора (RU)
         LootModeSec = "— РЕЖИМЫ СБОРА ЛУТА —",
-        LootFilterTog = "Автоматический подбор предметов",
-        LootAllTog = "Автоматический подбор всех предметов",
+        LootFilterTog = "Автоматический подбор (Строгий Фильтр)",
+        LootAllTog = "Автоматический подбор ВСЕХ предметов",
         FiltWorldSec = "— НАСТРОЙКА ФИЛЬТРА МИРА —",
         WorldSelect = "Выбери текущий Мир",
+        WorldsArray = {"Мир 1", "Мир 2", "Мир 3"},
         EquipSec = "— Экипировка —", HelmName = "🎩 Шлемы", ChestName = "🧥 Нагрудники", LegName = "👖 Штаны", BootName = "🥾 Ботинки", ShieldName = "🛡️ Щиты", WepName = "⚔️ Оружие и Инструменты",
         SpecSec = "— Специальное и Расходники —", PotName = "🧪 Зелья", RuneName = "🌀 Руны и Дроп Боссов", DiamName = "💎 Алмазы", RebirthName = "🔁 Предметы для Перерождения",
         
@@ -163,7 +165,11 @@ local function ParseGameModules()
                             end
                             
                             local category = nil
-                            if #digitParts == 4 and digitParts[3] ~= 100 and digitParts[3] ~= 101 then
+                            
+                            -- Строжайшая изоляция рун и фрагментов в первую очередь!
+                            if lowerId:find("runefragment", 1, true) or lowerId:find("fragment", 1, true) or lowerId:find("rune", 1, true) or lowerId:find("bossrune", 1, true) or string.upper(idStr):find("RUNE") or parentName:find("RUNE") then
+                                category = "RunePuzzles"
+                            elseif #digitParts == 4 and digitParts[3] ~= 100 and digitParts[3] ~= 101 then
                                 category = "RebirthItems"
                             elseif lowerId:find("weapon", 1, true) or lowerId:find("sword", 1, true) or lowerId:find("pickaxe", 1, true) or lowerId:find("axe", 1, true) or string.upper(idStr):find("WEAPON") or parentName:find("WEAPON") then
                                 category = "Weapon"
@@ -177,7 +183,7 @@ local function ParseGameModules()
                                 category = "Leggings"
                             elseif lowerId:find("boots", 1, true) or string.upper(idStr):find("BOOTS") or parentName:find("BOOTS") then 
                                 category = "Boots"
-                            elseif lowerId:find("runefragment", 1, true) or lowerId:find("fragment", 1, true) or lowerId:find("rune", 1, true) or lowerId:find("heart", 1, true) or string.upper(idStr):find("RUNE") or parentName:find("RUNE") then 
+                            elseif lowerId:find("heart", 1, true) then 
                                 category = "RunePuzzles"
                             elseif lowerId:find("diamond", 1, true) or string.upper(idStr):find("DIAMOND") then 
                                 category = "Diamonds"
@@ -192,9 +198,23 @@ local function ParseGameModules()
                             
                             if category then
                                 local cleanName = realName:gsub("Рецепт на ", ""):gsub("Рецепт ", ""):gsub("[Rr]ecipe", ""):gsub("_", " ")
+                                
+                                local isBossItem = (digitParts[3] == 100 or digitParts[3] == 101 or lowerId:find("queen", 1, true) or lowerId:find("king", 1, true) or lowerId:find("boss", 1, true))
+                                
+                                if isBossItem then
+                                    local isException = lowerId:find("skeletonking_shield", 1, true) or lowerId:find("skeletonking_chestplate", 1, true) or lowerId:find("skeletonking_leggings", 1, true) or cleanName:find("Щит Короля Скелетов") or cleanName:find("Нагрудник Короля Скелетов") or cleanName:find("Штаны Короля Скелетов")
+                                    
+                                    if not isException and category ~= "RunePuzzles" then
+                                        local prefix = (Language == "RU") and "[Крафт] " or "[Craft] "
+                                        if not cleanName:find("%[") then
+                                            cleanName = prefix .. cleanName
+                                        end
+                                    end
+                                end
+
                                 table.insert(RawGameDatabase, {
                                     Id = idStr, CleanIdLower = lowerId, RealName = realName, CleanName = cleanName, Category = category,
-                                    IsBoss = (digitParts[3] == 100 or digitParts[3] == 101 or lowerId:find("queen", 1, true) or lowerId:find("king", 1, true) or lowerId:find("boss", 1, true)) and true or false,
+                                    IsBoss = isBossItem,
                                     Digits = digitParts
                                 })
                             end
@@ -205,7 +225,6 @@ local function ParseGameModules()
         end
     end
 end
-pcall(ParseGameModules)
 
 -- [ СТРУКТУРНАЯ СОРТИРОВКА ]
 local function SortByItemStructure(tbl)
@@ -273,9 +292,12 @@ local function UpdateMenuForWorld(worldNum)
     
     for cat, list in pairs(DropdownOptions) do
         SortByItemStructure(list)
-        if #list == 0 then table.insert(list, "Нет предметов") end
+        if #list == 0 then table.insert(list, (Language == "RU" and "Нет предметов" or "No Items")) end
     end
 end
+
+-- Инициализируем базу данных перед билдом меню
+pcall(ParseGameModules)
 UpdateMenuForWorld(1)
 
 local function RecalculateSelectedCache()
@@ -304,7 +326,7 @@ local function TriggerPrompt(prompt)
     end
 end
 
--- Продвинутая сверка лута по ID игры
+-- [ СТРОГАЯ И ИСПРАВЛЕННАЯ СВЕРКА ЛУТА ]
 local function CheckLootFilterMatch(prompt)
     if not prompt.Enabled then return false end
     
@@ -315,10 +337,14 @@ local function CheckLootFilterMatch(prompt)
     if not Config.AutoLoot then return false end
     
     local current = prompt.Parent
-    for i = 1, 3 do
+    for i = 1, 4 do
         if not current or current == workspace then break end
         local objNameLower = string.lower(current.Name)
         
+        -- Полное совпадение по хэш-таблице выбранного пользователем ID
+        if activeSelectedIds[objNameLower] then return true end
+        
+        -- Поиск точных разделителей, чтобы избежать ложных срабатываний (руны не пройдут)
         for targetId, _ in pairs(activeSelectedIds) do
             if objNameLower == targetId or objNameLower:find("_" .. targetId .. "$") or objNameLower:find("^" .. targetId .. "_") or objNameLower:find("_" .. targetId .. "_") then
                 return true
@@ -612,7 +638,7 @@ TabFarm:CreateButton({Name = L[Language].RouteDel, Callback = function()
     end
 end})
 
--- [ ИСПРАВЛЕННАЯ ВКЛАДКА: АВТОПОДБОР ПРЕДМЕТОВ (БЕЗ РЮКЗАКА И ОГНЯ) ]
+-- [ ВКЛАДКА: АВТОПОДБОР ПРЕДМЕТОВ ]
 local TabLoot = Window:CreateTab(L[Language].LootTab)
 
 TabLoot:CreateSection(L[Language].LootModeSec)
@@ -623,16 +649,25 @@ local DropHelmets, DropChestplates, DropLeggings, DropBoots, DropShields, DropWe
 
 TabLoot:CreateSection(L[Language].FiltWorldSec)
 TabLoot:CreateDropdown({
-    Name = L[Language].WorldSelect, Options = {"Мир 1", "Мир 2", "Мир 3"}, CurrentOption = {"Мир 1"}, MultipleOptions = false,
+    Name = L[Language].WorldSelect, 
+    Options = L[Language].WorldsArray, 
+    CurrentOption = {L[Language].WorldsArray[1]}, 
+    MultipleOptions = false,
     Callback = function(selectedTable)
         local choice = selectedTable[1]
-        local worldNum = choice == "Мир 2" and 2 or (choice == "Мир 3" and 3 or 1)
+        local worldNum = (choice:find("2") and 2) or (choice:find("3") and 3) or 1
         UpdateMenuForWorld(worldNum); RecalculateSelectedCache()
-        DropHelmets:Refresh(DropdownOptions.Helmet, {}) DropChestplates:Refresh(DropdownOptions.Chestplate, {})
-        DropLeggings:Refresh(DropdownOptions.Leggings, {}) DropBoots:Refresh(DropdownOptions.Boots, {})
-        DropShields:Refresh(DropdownOptions.Shield, {}) DropWeapons:Refresh(DropdownOptions.Weapon, {})
-        DropDiamonds:Refresh(DropdownOptions.Diamonds, {}) DropPotions:Refresh(DropdownOptions.Potions, {})
-        DropRunes:Refresh(DropdownOptions.RunePuzzles, {}) DropRebirthItems:Refresh(DropdownOptions.RebirthItems, {})
+        
+        DropHelmets:Refresh(DropdownOptions.Helmet, {}) 
+        DropChestplates:Refresh(DropdownOptions.Chestplate, {})
+        DropLeggings:Refresh(DropdownOptions.Leggings, {}) 
+        DropBoots:Refresh(DropdownOptions.Boots, {})
+        DropShields:Refresh(DropdownOptions.Shield, {}) 
+        DropWeapons:Refresh(DropdownOptions.Weapon, {})
+        DropDiamonds:Refresh(DropdownOptions.Diamonds, {}) 
+        DropPotions:Refresh(DropdownOptions.Potions, {})
+        DropRunes:Refresh(DropdownOptions.RunePuzzles, {}) 
+        DropRebirthItems:Refresh(DropdownOptions.RebirthItems, {})
     end
 })
 
@@ -652,9 +687,9 @@ DropRebirthItems = TabLoot:CreateDropdown({Name = L[Language].RebirthName, Optio
 
 
 -- Вкладка: Миры
-local TabWorlds = Window:CreateTab(L[Language].Worlds)
 local World1Points = { ["Boss 1"] = Vector3.new(-66, 41.7, -12.4), ["Boss 2"] = Vector3.new(-89.5, 52.2, -160.7), ["Boss 3"] = Vector3.new(-18.2, 81.5, -505.9), ["Boss 4"] = Vector3.new(-91.3, 141.7, -632.9), ["World 1 Boss Rune"] = Vector3.new(2.5, 58.8, -24.5) }
 local World2Points = { ["Boss 1"] = Vector3.new(75, 6, -112), ["Boss 2"] = Vector3.new(51, -13, -449), ["Boss 3"] = Vector3.new(78, 41.1, -835), ["Boss 4"] = Vector3.new(60, 4, -1012) }
+local TabWorlds = Window:CreateTab(L[Language].Worlds)
 TabWorlds:CreateDropdown({Name = L[Language].W1, Options = {" ", "Boss 1", "Boss 2", "Boss 3", "Boss 4", "World 1 Boss Rune"}, CurrentOption = " ", Callback = function(O) local c = type(O)=="table" and O[1] or O; Config.SelectedCoords = (c~=" ") and World1Points[c] or nil end})
 TabWorlds:CreateDropdown({Name = L[Language].W2, Options = {" ", "Boss 1", "Boss 2", "Boss 3", "Boss 4"}, CurrentOption = " ", Callback = function(O) local c = type(O)=="table" and O[1] or O; Config.SelectedCoords = (c~=" ") and World2Points[c] or nil end})
 TabWorlds:CreateButton({Name = L[Language].TPBtn, Callback = function() if Config.SelectedCoords then TeleportTo(Config.SelectedCoords) end end})
@@ -685,7 +720,9 @@ task.spawn(function()
         if (Config.AutoLoot or Config.LootAll) and hrp and not Config.FlyFarm and not Config.PathFarming then
             for _, item in pairs(SharedLoot) do
                 if (hrp.Position - item.Part.Position).Magnitude <= 35 then
-                    TriggerPrompt(item.Prompt)
+                    if CheckLootFilterMatch(item.Prompt) then
+                        TriggerPrompt(item.Prompt)
+                    end
                 end
             end
         end
@@ -810,10 +847,25 @@ Player.CharacterAdded:Connect(function(char)
     if Config.FlyFarm then CreateVisualBall(char) end
 end)
 
+-- [ СИСТЕМА ФОРМАТИРОВАНИЯ ХП ДЛЯ ОГРОМНЫХ ЧИСЕЛ С 3 ЗНАКАМИ ]
 local function FormatHP(val)
-    if val >= 1000000 then return string.format("%.1fM", val / 1000000):gsub("%.0", "")
-    elseif val >= 1000 then return string.format("%.1fk", val / 1000):gsub("%.0", "") end
-    return tostring(math.floor(val))
+    if not val or val < 1000 then return tostring(math.floor(val or 0)) end
+    
+    local suffixes = {"", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"}
+    local tier = math.min(math.floor(math.log10(val) / 3), #suffixes)
+    
+    if tier == 0 then return tostring(math.floor(val)) end
+    
+    local scaled = val / (1000 ^ tier)
+    local formatted = string.format("%.3f%s", scaled, suffixes[tier])
+    
+    -- Очищаем лишние нули в конце дроби, чтобы не было "100.000B"
+    formatted = formatted:gsub("%.000", "")
+    if formatted:find("%.") then
+        formatted = formatted:gsub("0+(%A)$", "%1"):gsub("%.(%A)$", "%1")
+    end
+    
+    return formatted
 end
 
 local function GetHealthColor(percent) return Color3.fromHSV((math.clamp(percent, 0, 1) * 120) / 360, 1, 1) end
