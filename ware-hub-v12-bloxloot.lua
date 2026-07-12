@@ -160,52 +160,50 @@ local function ParseGameModules()
                                 if num then table.insert(digitParts, num) end
                             end
                             
+                            -- Проверка на принадлежность к боссу (ID зоны 100/101 или ключевые слова)
+                            local isBossItem = (digitParts[3] == 100 or digitParts[3] == 101 or lowerId:find("queen", 1, true) or lowerId:find("king", 1, true) or lowerId:find("boss", 1, true))
+                            
                             local category = nil
                             
+                            -- Фильтрация категорий
                             if lowerId:find("runefragment", 1, true) or lowerId:find("fragment", 1, true) or lowerId:find("rune", 1, true) or lowerId:find("bossrune", 1, true) or string.upper(idStr):find("RUNE") or parentName:find("RUNE") then
                                 category = "RunePuzzles"
                             elseif #digitParts == 4 and digitParts[3] ~= 100 and digitParts[3] ~= 101 then
                                 category = "RebirthItems"
-                            elseif lowerId:find("weapon", 1, true) or lowerId:find("sword", 1, true) or lowerId:find("pickaxe", 1, true) or lowerId:find("axe", 1, true) or string.upper(idStr):find("WEAPON") or parentName:find("WEAPON") then
-                                category = "Weapon"
-                            elseif lowerId:find("shield", 1, true) or string.upper(idStr):find("SHIELD") or parentName:find("SHIELD") then
-                                category = "Shield"
-                            elseif lowerId:find("helmet", 1, true) or string.upper(idStr):find("HELMET") or parentName:find("HELMET") then 
-                                category = "Helmet"
-                            elseif lowerId:find("chest", 1, true) or lowerId:find("armor", 1, true) or lowerId:find("cloak", 1, true) or string.upper(idStr):find("CHESTPLATE") or parentName:find("CHESTPLATE") then 
-                                category = "Chestplate"
-                            elseif lowerId:find("leg", 1, true) or lowerId:find("pants", 1, true) or string.upper(idStr):find("LEGGINGS") or parentName:find("LEGGINGS") then 
-                                category = "Leggings"
-                            elseif lowerId:find("boots", 1, true) or string.upper(idStr):find("BOOTS") or parentName:find("BOOTS") then 
-                                category = "Boots"
-                            elseif lowerId:find("heart", 1, true) then 
-                                category = "RunePuzzles"
                             elseif lowerId:find("diamond", 1, true) or string.upper(idStr):find("DIAMOND") then 
                                 category = "Diamonds"
                             elseif lowerId:find("potion", 1, true) or string.upper(idStr):find("POTION") or parentName:find("POTION") then 
                                 category = "Potions"
-                            end
-                            
-                            if not category then
-                                if info.Damage or info.Dmg then category = "Weapon"
-                                elseif info.Block or info.Defence then category = "Shield" end
-                            end
-                            
-                            if category then
-                                local cleanName = realName:gsub("Рецепт на ", ""):gsub("Рецепт ", ""):gsub("[Rr]ecipe", ""):gsub("_", " ")
-                                local isBossItem = (digitParts[3] == 100 or digitParts[3] == 101 or lowerId:find("queen", 1, true) or lowerId:find("king", 1, true) or lowerId:find("boss", 1, true))
-                                
-                                if isBossItem then
-                                    local isException = lowerId:find("skeletonking_shield", 1, true) or lowerId:find("skeletonking_chestplate", 1, true) or lowerId:find("skeletonking_leggings", 1, true) or cleanName:find("Щит Короля Скелетов") or cleanName:find("Нагрудник Короля Скелетов") or cleanName:find("Штаны Короля Скелетов")
-                                    if not isException and category ~= "RunePuzzles" then
-                                        local prefix = (Language == "RU") and "[Крафт] " or "[Craft] "
-                                        if not cleanName:find("%[") then cleanName = prefix .. cleanName end
-                                    end
+                            -- Обычное снаряжение пропускаем только если это НЕ вещь босса
+                            elseif not isBossItem then
+                                if lowerId:find("weapon", 1, true) or lowerId:find("sword", 1, true) or lowerId:find("pickaxe", 1, true) or lowerId:find("axe", 1, true) or string.upper(idStr):find("WEAPON") or parentName:find("WEAPON") then
+                                    category = "Weapon"
+                                elseif lowerId:find("shield", 1, true) or string.upper(idStr):find("SHIELD") or parentName:find("SHIELD") then
+                                    category = "Shield"
+                                elseif lowerId:find("helmet", 1, true) or string.upper(idStr):find("HELMET") or parentName:find("HELMET") then 
+                                    category = "Helmet"
+                                elseif lowerId:find("chest", 1, true) or lowerId:find("armor", 1, true) or lowerId:find("cloak", 1, true) or string.upper(idStr):find("CHESTPLATE") or parentName:find("CHESTPLATE") then 
+                                    category = "Chestplate"
+                                elseif lowerId:find("leg", 1, true) or lowerId:find("pants", 1, true) or string.upper(idStr):find("LEGGINGS") or parentName:find("LEGGINGS") then 
+                                    category = "Leggings"
+                                elseif lowerId:find("boots", 1, true) or string.upper(idStr):find("BOOTS") or parentName:find("BOOTS") then 
+                                    category = "Boots"
+                                elseif lowerId:find("heart", 1, true) then 
+                                    category = "RunePuzzles"
                                 end
-
+                                
+                                if not category then
+                                    if info.Damage or info.Dmg then category = "Weapon"
+                                    elseif info.Block or info.Defence then category = "Shield" end
+                                end
+                            end
+                            
+                            -- Если предмет подошел и это НЕ экипировка босса — добавляем в базу
+                            if category and not (isBossItem and category ~= "RunePuzzles" and category ~= "Potions" and category ~= "RebirthItems" and category ~= "Diamonds") then
+                                local cleanName = realName:gsub("Рецепт на ", ""):gsub("Рецепт ", ""):gsub("[Rr]ecipe", ""):gsub("_", " ")
                                 table.insert(RawGameDatabase, {
                                     Id = idStr, CleanIdLower = lowerId, RealName = realName, CleanName = cleanName, Category = category,
-                                    IsBoss = isBossItem, Digits = digitParts
+                                    IsBoss = false, Digits = digitParts
                                 })
                             end
                         end)
@@ -222,8 +220,6 @@ local function SortByItemStructure(tbl)
         local firstPartB = b:match("^([^|]+)") or ""
         local numA = {} for p in string.gmatch(firstPartA, "%d+") do table.insert(numA, tonumber(p)) end
         local numB = {} for p in string.gmatch(firstPartB, "%d+") do table.insert(numB, tonumber(p)) end
-        if a:find("BOSS") and #numA == 2 then table.insert(numA, 100) end
-        if b:find("BOSS") and #numB == 2 then table.insert(numB, 100) end
         for i = 1, math.max(#numA, #numB) do
             local valA = numA[i] or 0 local valB = numB[i] or 0
             if valA ~= valB then return valA < valB end
@@ -263,7 +259,6 @@ local function UpdateMenuForWorld(worldNum)
         else
             if itemWorld == worldNum then
                 local tierLabel = tostring(itemTier)
-                if item.IsBoss then tierLabel = "BOSS" end
                 if #item.Digits >= 3 then displayName = itemWorld .. "-" .. itemZone .. "-" .. tierLabel .. " | " .. cleanName
                 else displayName = itemWorld .. "-1-" .. tierLabel .. " | " .. cleanName end
                 canAdd = true
@@ -529,7 +524,7 @@ task.spawn(function()
 end)
 
 -- [[ СТРОИТЕЛЬ ИНТЕРФЕЙСА RAYFIELD ]]
-local Window = Rayfield:CreateWindow({Name = "BloxLoot WareHub v12 [Update 6]", LoadingTitle = "Loading Ultimate Script...", ConfigurationSaving = {Enabled = false}})
+local Window = Rayfield:CreateWindow({Name = "BloxLoot WareHub v13 [Update 0]", LoadingTitle = "Loading Ultimate Script...", ConfigurationSaving = {Enabled = false}})
 
 local Tab1 = Window:CreateTab(L[Language].Main)
 Tab1:CreateSection(L[Language].LangSec)
@@ -696,7 +691,7 @@ task.spawn(function()
     end
 end)
 
--- [[ ИНТЕГРИРОВАННЫЙ ФЛАЙ-АВТОФАРМ ]]
+-- [[ ОБНОВЛЕННЫЙ, ИСПРАВЛЕННЫЙ ФЛАЙ-АВТОФАРМ ]]
 local waveTime = 0
 RunService.Heartbeat:Connect(function(dt)
     local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
@@ -708,7 +703,8 @@ RunService.Heartbeat:Connect(function(dt)
             waveTime = waveTime + (dt * 26)
             local tp = activeLootObject.Part.Position + Vector3.new(0, ((math.cos(waveTime)-1)*2.0) + 1.2, 0)
             hrp.CFrame = MoveTowards(hrp.CFrame, tp, Config.FarmSpeed, dt)
-            if (hrp.Position - tp).Magnitude <= 7 then TriggerPrompt(activeLootObject.Prompt) end
+            if (hrp.Position - tp).Magnitude <= 6 then TriggerPrompt(activeLootObject.Prompt) end
+            
         elseif activeMobObject and activeMobObject:FindFirstChild("HumanoidRootPart") then
             local tHrp = activeMobObject.HumanoidRootPart
             local fp = tHrp.Position + (tHrp.CFrame.LookVector * Config.DistanceOffset) + Vector3.new(0, Config.HeightOffset, 0)
@@ -825,7 +821,7 @@ Player.CharacterAdded:Connect(function(char)
     if Config.FlyFarm then CreateVisualBall(char) end
 end)
 
--- [[ ЖЕЛЕЗОБЕТОННАЯ СИСТЕМА ФОРМАТИРОВАНИЯ ХП БЕЗ СКРЫТЫХ БАГОВ ]]
+-- [[ ЖЕЛЕЗОБЕТОННАЯ СИСТЕМА ФОРМАТИРОВАНИЯ ХП ]]
 local function FormatHP(val)
     if not val then return "0" end
     if val < 1000 then return tostring(math.floor(val)) end
